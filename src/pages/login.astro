@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+---
+
+<html lang="en">
+<body class="bg-[#020408] text-slate-400 flex items-center justify-center min-h-screen">
+  <div class="w-full max-w-md p-8">
+    <div class="mb-10 text-center">
+      <h1 class="text-white text-2xl font-bold tracking-tighter uppercase">Terminal Access</h1>
+      <p class="text-xs tracking-[0.3em] uppercase mt-2 text-slate-600">Allied Algos Protocol</p>
+    </div>
+
+    <form id="login-form" class="space-y-4">
+      <input type="email" id="email" placeholder="OPERATOR EMAIL" class="w-full bg-[#0a0f1a] border border-slate-800 px-4 py-3 text-sm text-white focus:border-cyan-500 outline-none transition-colors" />
+      <input type="password" id="password" placeholder="ACCESS KEY" class="w-full bg-[#0a0f1a] border border-slate-800 px-4 py-3 text-sm text-white focus:border-cyan-500 outline-none transition-colors" />
+      <button class="w-full bg-white text-black font-bold py-3 text-xs uppercase tracking-widest hover:bg-cyan-500 transition-colors">Authorize</button>
+    </form>
+    <p id="error" class="text-red-500 text-[10px] mt-4 text-center hidden"></p>
+  </div>
+
+  <script>
+    import { auth } from "../lib/firebase";
+    import { signInWithEmailAndPassword } from "firebase/auth";
+
+    const form = document.getElementById('login-form');
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = (document.getElementById('email') as HTMLInputElement).value;
+      const pass = (document.getElementById('password') as HTMLInputElement).value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        window.location.href = "/";
+      } catch (err: any) {
+        document.getElementById('error')!.innerText = err.message;
+        document.getElementById('error')!.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
