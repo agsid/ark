@@ -1,21 +1,32 @@
 @import "tailwindcss";
-@layer components {
-  .glass {
-    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
-  }
-  
-  .floating {
-    animation: float 6s ease-in-out infinite;
-  }
 
-  @keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(2deg); }
+@layer base {
+  body {
+    @apply bg-[#F8FAFC] text-slate-900 font-sans antialiased overflow-x-hidden;
+    background-image: radial-gradient(circle at 1px 1px, #e2e8f0 1.5px, transparent 0);
+    background-size: 32px 32px;
   }
 }
 
-body {
-  @apply bg-[#f0f4f8] text-slate-900 font-sans antialiased overflow-x-hidden;
-  background-image: radial-gradient(circle at 2px 2px, #e2e8f0 1px, transparent 0);
-  background-size: 40px 40px;
+@layer components {
+  .glass-surface {
+    /* We use white/70 here so it looks like thick glass on top of the light background */
+    background: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(40px) saturate(190%);
+    -webkit-backdrop-filter: blur(40px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 1);
+    box-shadow: 
+        0 20px 40px -15px rgba(0, 0, 0, 0.05),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    position: relative;
+  }
+
+  /* Specular Highlight for light mode should be subtle */
+  .glass-surface::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  }
 }

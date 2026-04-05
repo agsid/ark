@@ -1,100 +1,126 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
 ---
 
 <Layout title="ARK | Command Center">
-  <Header />
+  <nav class="md:hidden flex border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-40">
+    <button id="tab-sensors" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-indigo-600 border-b-2 border-indigo-600">Containment</button>
+    <button id="tab-environment" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Atmosphere</button>
+    <button id="tab-map" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Telemetry</button>
+  </nav>
 
-  <div class="md:hidden flex border-b border-slate-200 bg-white sticky top-16 z-40">
-    <button id="tab-sensors" class="flex-1 py-4 text-xs font-black uppercase tracking-widest text-indigo-600 border-b-2 border-indigo-600">Sensors</button>
-    <button id="tab-environment" class="flex-1 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Environment</button>
-    <button id="tab-map" class="flex-1 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Location</button>
+  <div class="fixed top-4 right-6 z-50 pointer-events-none select-none text-right">
+    <p class="text-[8px] font-mono font-bold text-slate-300 uppercase tracking-tighter">Live Telemetry</p>
+    <p class="text-[10px] font-mono font-black text-slate-400"><span id="raw-dist">--</span> CM</p>
   </div>
 
-  <main class="p-4 md:p-8 bg-[#fcfdfe] min-h-screen">
+  <main class="p-4 md:p-10 bg-[#F8FAFC] min-h-screen">
     <div class="max-w-7xl mx-auto">
       
-      <div id="dashboard-grid" class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <header class="mb-10 hidden md:block">
+        <h2 class="text-3xl font-light tracking-tighter text-slate-900">Relic Containment <span class="font-bold text-indigo-600">Protocol</span></h2>
+        <p class="text-slate-400 text-sm mt-1">Real-time surveillance of Allied Relic Keeper (ARK) unit.</p>
+      </header>
+
+      <div id="dashboard-grid" class="grid grid-cols-1 md:grid-cols-12 gap-8">
         
-        <div id="section-sensors" class="md:col-span-6 space-y-6">
-            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Security Arrays</h3>
+        <div id="section-sensors" class="md:col-span-7 lg:col-span-8 space-y-8">
+            <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-3">
+                <span class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
+                Active Security Arrays
+            </h3>
             
-            <div class="bg-white/40 backdrop-blur-xl border border-white/40 p-6 rounded-[2rem] shadow-xl shadow-indigo-100/20 relative overflow-hidden group">
-                <div class="flex justify-between items-start relative z-10">
-                    <div>
-                        <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Lid Proximity</p>
-                        <div class="flex items-baseline gap-2 mt-2">
-                            <span id="dist-lid" class="text-5xl font-black text-slate-900 tabular tracking-tighter">0.00</span>
-                            <span class="text-sm font-bold text-slate-300">CM</span>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass-surface p-8 rounded-[2.5rem] shadow-xl shadow-indigo-100/20 bg-white border border-white relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <p class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-1">Status Report</p>
+                            <h4 class="text-2xl font-black text-slate-900 tracking-tight">Box Lid</h4>
                         </div>
+                        <div id="badge-lid" class="px-4 py-1.5 rounded-full text-[11px] font-black uppercase bg-slate-100 text-slate-400">Syncing</div>
                     </div>
-                    <div id="badge-lid" class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-600 border border-emerald-100">Secured</div>
+                    
+                    <div class="flex items-center gap-4 mb-6">
+                        <span id="text-lid-status" class="text-6xl font-black text-slate-900 tracking-tighter">--</span>
+                    </div>
+
+                    <div class="h-20 w-full opacity-50">
+                        <canvas id="lidChart"></canvas>
+                    </div>
                 </div>
-                <div class="mt-4 h-1 bg-slate-100 rounded-full overflow-hidden">
-                    <div id="bar-lid" class="h-full bg-indigo-500 transition-all duration-500 w-0"></div>
+
+                <div class="glass-surface p-8 rounded-[2.5rem] shadow-xl shadow-cyan-100/20 bg-white border border-white">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <p class="text-[10px] font-black text-cyan-600 uppercase tracking-[0.2em] mb-1">Internal Sensor</p>
+                            <h4 class="text-2xl font-black text-slate-900 tracking-tight">Relic Signature</h4>
+                        </div>
+                        <div id="badge-relic" class="px-4 py-1.5 rounded-full text-[11px] font-black uppercase bg-slate-100 text-slate-400">Syncing</div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-6">
+                        <span id="dist-relic" class="text-5xl font-black text-slate-900 tabular-nums">--</span>
+                        <span class="text-xs font-bold text-slate-300">CM</span>
+                    </div>
+                    <div class="h-20 w-full opacity-50">
+                        <canvas id="relicChart"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white/40 backdrop-blur-xl border border-white/40 p-6 rounded-[2rem] shadow-xl shadow-indigo-100/20 relative overflow-hidden group">
-                <div class="flex justify-between items-start relative z-10">
-                    <div>
-                        <p class="text-[10px] font-black text-cyan-600 uppercase tracking-widest">Relic Tracker</p>
-                        <div class="flex items-baseline gap-2 mt-2">
-                            <span id="dist-relic" class="text-5xl font-black text-slate-900 tabular tracking-tighter">0.00</span>
-                            <span class="text-sm font-bold text-slate-300">CM</span>
-                        </div>
-                    </div>
-                    <div id="badge-relic" class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-600 border border-emerald-100">Present</div>
-                </div>
-                <div class="mt-4 h-1 bg-slate-100 rounded-full overflow-hidden">
-                    <div id="bar-relic" class="h-full bg-cyan-500 transition-all duration-500 w-0"></div>
+            <div id="section-map" class="hidden md:block">
+                <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Global Telemetry</h3>
+                <div class="w-full h-80 bg-slate-200 rounded-[3rem] overflow-hidden relative border-4 border-white shadow-inner">
+                    <iframe class="w-full h-full grayscale" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15000!2d0!3d0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1" style="border:0;"></iframe>
                 </div>
             </div>
         </div>
 
-        <div id="section-environment" class="md:col-span-6 space-y-6 hidden md:block">
-            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Environmental Analysis</h3>
+        <div id="section-environment" class="md:col-span-5 lg:col-span-4 space-y-8 hidden md:block">
+            <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">Atmospheric Analysis</h3>
             <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase">Temp</p>
+                <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Temp</p>
                     <p class="text-2xl font-black text-slate-900"><span id="val-temp">--</span>°C</p>
                 </div>
-                <div class="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase">AQI</p>
+                <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Air Quality</p>
                     <p class="text-2xl font-black text-slate-900"><span id="val-aqi">--</span></p>
                 </div>
             </div>
-            <div class="bg-slate-900 rounded-[2rem] p-6 h-64 shadow-2xl relative overflow-hidden group">
-                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4">Atmospheric Stability (10m)</p>
-                <canvas id="envChart"></canvas>
-            </div>
-        </div>
-
-        <div id="section-map" class="md:col-span-12 hidden md:block">
-            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Deployment Location</h3>
-            <div class="w-full h-80 bg-slate-200 rounded-[2.5rem] shadow-inner overflow-hidden relative">
-                <iframe 
-                    class="w-full h-full grayscale contrast-125" 
-                    src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d10000!2d-0!3d0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1" 
-                    style="border:0;" allowfullscreen="" loading="lazy">
-                </iframe>
-                <div class="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5 rounded-[2.5rem]"></div>
+            <div class="bg-slate-900 rounded-[2.5rem] p-6 shadow-2xl">
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4">Thermal Stability</p>
+                <div class="h-40">
+                    <canvas id="envChart"></canvas>
+                </div>
             </div>
         </div>
       </div>
+
+      <footer class="mt-20 py-10 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white text-[10px] font-black italic">AA</div>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">© 2026 Allied Algorithms</p>
+        </div>
+        <a href="https://alliedalgos.org" target="_blank" class="group flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-400 transition-colors">
+            Main Team Website
+            <svg class="w-3 h-3 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+      </footer>
     </div>
   </main>
 
-  <div id="notification-toast" class="fixed top-24 right-6 z-[100] w-80 translate-x-[120%] transition-all duration-500">
-    <div class="bg-white/90 backdrop-blur-2xl border border-rose-100 p-4 rounded-3xl shadow-2xl flex gap-4 items-center ring-1 ring-rose-500/20">
-      <div class="w-12 h-12 bg-rose-500 rounded-2xl flex items-center justify-center text-white">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-      </div>
-      <div>
-        <p id="alert-title" class="text-sm font-black text-slate-900 leading-tight">Alert</p>
-        <p id="alert-body" class="text-[11px] text-slate-500 font-medium">Monitoring active.</p>
-      </div>
+  <div id="notification-toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-[400px] pointer-events-none opacity-0 -translate-y-20 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]">
+    <div class="bg-white/80 backdrop-blur-2xl p-4 rounded-[2.2rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] border border-white/50 flex items-center gap-4 ring-1 ring-black/5">
+        <div class="w-12 h-12 bg-rose-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-rose-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <div class="flex-1">
+            <div class="flex justify-between items-center mb-0.5">
+                <p class="text-sm font-black text-slate-900 tracking-tight">Security Alert</p>
+                <span class="text-[9px] font-bold text-slate-400 uppercase">Now</span>
+            </div>
+            <p class="text-xs text-slate-500 font-medium leading-tight">The Box Lid has been opened.</p>
+        </div>
     </div>
   </div>
 
@@ -103,98 +129,105 @@ import Header from '../components/Header.astro';
     import { ref, onValue } from "firebase/database";
     import Chart from 'chart.js/auto';
 
-    // 1. MOBILE TAB LOGIC
-    const tabs = {
-        sensors: document.getElementById('tab-sensors'),
-        env: document.getElementById('tab-environment'),
-        map: document.getElementById('tab-map')
-    };
-    const sections = {
-        sensors: document.getElementById('section-sensors'),
-        env: document.getElementById('section-environment'),
-        map: document.getElementById('section-map')
+    const updateText = (id: string, val: any) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
     };
 
-    Object.keys(tabs).forEach(key => {
-        tabs[key]?.addEventListener('click', () => {
-            Object.values(sections).forEach(s => s?.classList.add('hidden', 'md:block'));
-            Object.values(tabs).forEach(t => t?.classList.replace('text-indigo-600', 'text-slate-400'));
-            Object.values(tabs).forEach(t => t?.classList.remove('border-b-2', 'border-indigo-600'));
-            
-            sections[key]?.classList.remove('hidden');
-            tabs[key]?.classList.replace('text-slate-400', 'text-indigo-600');
-            tabs[key]?.classList.add('border-b-2', 'border-indigo-600');
-        });
+    const chartConfig = (color: string) => ({
+        type: 'line' as const,
+        data: { labels: Array(15).fill(''), datasets: [{ data: [], borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true, backgroundColor: color + '10' }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
     });
 
-    // 2. CHART CONFIG
-    const ctx = (document.getElementById('envChart') as HTMLCanvasElement)?.getContext('2d');
-    const envChart = new Chart(ctx!, {
-        type: 'line',
-        data: { labels: [], datasets: [{ label: 'Temp', data: [], borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)' }] },
-        options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } } } }
+    const lidChart = new Chart(document.getElementById('lidChart') as HTMLCanvasElement, chartConfig('#6366f1'));
+    const relicChart = new Chart(document.getElementById('relicChart') as HTMLCanvasElement, chartConfig('#06b6d4'));
+    const envChart = new Chart(document.getElementById('envChart') as HTMLCanvasElement, {
+        ...chartConfig('#818cf8'),
+        options: { ...chartConfig('#818cf8').options, scales: { x: { display: false }, y: { grid: { color: '#1e293b' }, ticks: { color: '#475569' } } } }
     });
 
-    // 3. DATA STREAM & LOGIC
-    let alertLock = false;
+    let activeAlert = false;
+
+    // Listen to the 'sensor' node in Firebase
     onValue(ref(db, 'sensor'), (snapshot) => {
         const data = snapshot.val() || {};
-        const lid = data.lid_distance ?? 0;
-        const relic = data.relic_distance ?? 0;
+        
+        const distValue = data.distance ?? 0;
+        const relicValue = data.relic_distance ?? 0;
 
-        // Disregard > 100
-        if(lid > 100 || relic > 100) return;
+        // Update raw telemetry in top right
+        updateText('raw-dist', distValue.toFixed(3));
+        updateText('dist-relic', relicValue.toFixed(1));
+        updateText('val-temp', data.temp?.toFixed(1) || '--');
+        updateText('val-aqi', data.aqi || '--');
 
-        // Update UI Text
-        document.getElementById('dist-lid')!.innerText = lid.toFixed(1);
-        document.getElementById('dist-relic')!.innerText = relic.toFixed(1);
-        document.getElementById('val-temp')!.innerText = data.temp?.toFixed(1) || '--';
-        document.getElementById('val-aqi')!.innerText = data.aqi || '--';
+        // Logic: > 10 is OPEN, <= 10 is CLOSED
+        const isLidOpen = distValue > 10;
+        
+        const statusEl = document.getElementById('text-lid-status');
+        const badgeEl = document.getElementById('badge-lid');
 
-        // Update Progress Bars
-        document.getElementById('bar-lid')!.style.width = `${Math.min(lid, 100)}%`;
-        document.getElementById('bar-relic')!.style.width = `${Math.min(relic, 100)}%`;
+        if (statusEl && badgeEl) {
+            statusEl.innerText = isLidOpen ? "Open" : "Closed";
+            
+            if (isLidOpen) {
+                statusEl.classList.remove('text-slate-900');
+                statusEl.classList.add('text-rose-600');
+                badgeEl.innerText = "Breached";
+                badgeEl.className = "px-4 py-1.5 rounded-full text-[11px] font-black uppercase bg-rose-50 text-rose-600 border border-rose-100";
+            } else {
+                statusEl.classList.remove('text-rose-600');
+                statusEl.classList.add('text-slate-900');
+                badgeEl.innerText = "Secured";
+                badgeEl.className = "px-4 py-1.5 rounded-full text-[11px] font-black uppercase bg-emerald-50 text-emerald-600 border border-emerald-100";
+            }
+        }
 
-        // ALERTS
-        const lidOpen = lid > 5;
-        const relicGone = relic > 20;
+        // Charts update
+        const pushData = (chart: any, val: number) => {
+            chart.data.datasets[0].data.push(val);
+            if (chart.data.datasets[0].data.length > 15) chart.data.datasets[0].data.shift();
+            chart.update('none');
+        };
+        pushData(lidChart, distValue);
+        pushData(relicChart, relicValue);
+        if (data.temp) pushData(envChart, data.temp);
 
-        if (relicGone) triggerAlert("Artifact Missing", "Relic tracker reports target removed.");
-        else if (lidOpen) triggerAlert("Lid Breached", "Box lid is currently open.");
-
-        // Update Badges
-        updateBadge('badge-lid', lidOpen, "Breached", "Secured");
-        updateBadge('badge-relic', relicGone, "Missing", "Present");
-
-        // Update Chart
-        if(data.temp) {
-            envChart.data.labels!.push('');
-            envChart.data.datasets[0].data.push(data.temp);
-            if(envChart.data.labels!.length > 20) { envChart.data.labels!.shift(); envChart.data.datasets[0].data.shift(); }
-            envChart.update();
+        // Mobile notification trigger
+        if (isLidOpen && !activeAlert) {
+            triggerNotification();
         }
     });
 
-    function updateBadge(id, isError, errorText, okText) {
-        const el = document.getElementById(id);
-        if(!el) return;
-        el.innerText = isError ? errorText : okText;
-        el.className = isError 
-            ? "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-rose-50 text-rose-600 border border-rose-100"
-            : "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-600 border border-emerald-100";
+    function triggerNotification() {
+        activeAlert = true;
+        const toast = document.getElementById('notification-toast');
+        
+        toast?.classList.remove('opacity-0', '-translate-y-20');
+        toast?.classList.add('opacity-100', 'translate-y-0');
+
+        // Close after 5 seconds
+        setTimeout(() => {
+            toast?.classList.remove('opacity-100', 'translate-y-0');
+            toast?.classList.add('opacity-0', '-translate-y-20');
+            // Cool down before next alert
+            setTimeout(() => activeAlert = false, 2000);
+        }, 5000);
     }
 
-    function triggerAlert(title, body) {
-        if(alertLock) return;
-        const toast = document.getElementById('notification-toast');
-        document.getElementById('alert-title')!.innerText = title;
-        document.getElementById('alert-body')!.innerText = body;
-        toast?.classList.remove('translate-x-[120%]');
-        alertLock = true;
-        setTimeout(() => {
-            toast?.classList.add('translate-x-[120%]');
-            setTimeout(() => { alertLock = false; }, 5000);
-        }, 4000);
-    }
+    // Tabs logic for mobile
+    const tabs = ['sensors', 'environment', 'map'];
+    tabs.forEach(tab => {
+        document.getElementById(`tab-${tab}`)?.addEventListener('click', () => {
+            tabs.forEach(t => {
+                document.getElementById(`section-${t}`)?.classList.add('hidden', 'md:block');
+                document.getElementById(`tab-${t}`)?.classList.remove('text-indigo-600', 'border-b-2', 'border-indigo-600');
+                document.getElementById(`tab-${t}`)?.classList.add('text-slate-400');
+            });
+            document.getElementById(`section-${tab}`)?.classList.remove('hidden');
+            document.getElementById(`tab-${tab}`)?.classList.add('text-indigo-600', 'border-b-2', 'border-indigo-600');
+        });
+    });
   </script>
 </Layout>

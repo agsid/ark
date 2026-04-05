@@ -5,37 +5,42 @@
     <div class="flex items-center gap-3">
       <div class="w-9 h-9 bg-gradient-to-tr from-indigo-700 to-indigo-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200/50 transform transition-transform hover:scale-105 cursor-pointer">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2-2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
         </svg>
       </div>
       <div class="flex flex-col">
         <h1 class="text-slate-900 font-extrabold tracking-tight text-lg leading-tight hidden sm:block uppercase">ARK</h1>
-        <p class="text-[9px] font-bold text-indigo-600 uppercase tracking-[0.2em] leading-none hidden sm:block">Core Interface</p>
+        <p class="text-[9px] font-bold text-indigo-600 uppercase tracking-[0.2em] leading-none hidden sm:block">Allied Relic Keeper</p>
       </div>
     </div>
 
     <div class="flex items-center gap-4 pl-6 border-l border-slate-100">
       <div class="text-right hidden md:block">
-        <p id="user-display" class="text-sm font-bold text-slate-800 leading-none">Connecting...</p>
-        <p class="text-[10px] font-medium text-slate-400 mt-1 uppercase tracking-tighter">Authorized Operator</p>
+        <p id="user-display" class="text-sm font-bold text-slate-800 leading-none">Login Required</p>
+        <p id="user-status-label" class="text-[10px] font-medium text-slate-400 mt-1 uppercase tracking-tighter">Guest Access</p>
       </div>
       
       <div class="relative group cursor-pointer" id="profile-menu-trigger">
-        <img id="user-photo" referrerpolicy="no-referrer" src="https://ui-avatars.com/api/?name=U&background=f1f5f9&color=64748b" 
+        <img id="user-photo" referrerpolicy="no-referrer" src="https://ui-avatars.com/api/?name=?&background=f1f5f9&color=64748b" 
              class="w-10 h-10 rounded-xl border-2 border-white shadow-xl shadow-slate-200/50 object-cover ring-1 ring-slate-100 transition-transform active:scale-90" 
              alt="Profile" />
-        <div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
+        <div id="status-indicator" class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-slate-300 border-2 border-white rounded-full"></div>
 
         <div id="profile-dropdown" class="absolute right-0 mt-3 w-48 bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-slate-300/50 py-2 opacity-0 invisible translate-y-2 transition-all duration-200 z-50">
-          <div class="px-4 py-2 border-b border-slate-50 mb-1">
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Account</p>
+          <div id="logout-zone" class="hidden">
+              <div class="px-4 py-2 border-b border-slate-50 mb-1">
+                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Account</p>
+              </div>
+              <button id="logout-action" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-rose-500 hover:bg-rose-50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Sign Out
+              </button>
           </div>
-          <button id="logout-action" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-rose-500 hover:bg-rose-50 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-            </svg>
-            Sign Out
-          </button>
+          <div id="login-zone" class="px-4 py-2 text-sm text-slate-500 font-medium">
+            Please sign in to access your ARK.
+          </div>
         </div>
       </div>
     </div>
@@ -50,9 +55,12 @@
   const trigger = document.getElementById('profile-menu-trigger');
   const logoutBtn = document.getElementById('logout-action');
   const userDisplay = document.getElementById('user-display');
+  const statusLabel = document.getElementById('user-status-label');
+  const statusIndicator = document.getElementById('status-indicator');
   const userPhoto = document.getElementById('user-photo') as HTMLImageElement;
+  const logoutZone = document.getElementById('logout-zone');
+  const loginZone = document.getElementById('login-zone');
 
-  // UI Toggle
   trigger?.addEventListener('click', (e) => {
     e.stopPropagation();
     dropdown?.classList.toggle('opacity-0');
@@ -64,11 +72,25 @@
     dropdown?.classList.add('opacity-0', 'invisible', 'translate-y-2');
   });
 
-  // Auth Logic
   onAuthStateChanged(auth, (user) => {
     if (user) {
+      // Logged In State
       if (userDisplay) userDisplay.innerText = user.displayName || user.email?.split('@')[0] || "Operator";
-      if (userPhoto && user.photoURL) userPhoto.src = user.photoURL;
+      if (statusLabel) statusLabel.innerText = "Authorized Operator";
+      if (statusIndicator) statusIndicator.className = "absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full";
+      if (userPhoto) userPhoto.src = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=6366f1&color=fff`;
+      
+      logoutZone?.classList.remove('hidden');
+      loginZone?.classList.add('hidden');
+    } else {
+      // Logged Out State
+      if (userDisplay) userDisplay.innerText = "Guest User";
+      if (statusLabel) statusLabel.innerText = "Login Required";
+      if (statusIndicator) statusIndicator.className = "absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-slate-300 border-2 border-white rounded-full";
+      if (userPhoto) userPhoto.src = "https://ui-avatars.com/api/?name=?&background=f1f5f9&color=64748b";
+      
+      logoutZone?.classList.add('hidden');
+      loginZone?.classList.remove('hidden');
     }
   });
 
