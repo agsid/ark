@@ -1,5 +1,9 @@
 ---
 import '../styles/global.css';
+interface Props {
+	title: string;
+}
+const { title } = Astro.props;
 ---
 
 <!doctype html>
@@ -7,21 +11,41 @@ import '../styles/global.css';
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title} | ALLIED ALGOS</title>
 	</head>
 	<body>
-		<slot />
+		<div id="lock-screen" class="fixed inset-0 z-[100] bg-[#020408] flex items-center justify-center p-6 transition-opacity duration-500">
+			<div class="w-full max-w-md border border-slate-800 p-8 bg-[#05070a] text-center">
+				<div class="w-2 h-2 bg-red-600 mx-auto mb-4 animate-ping"></div>
+				<h2 class="text-white text-xl font-bold tracking-tighter uppercase">System Encrypted</h2>
+				<p class="text-[10px] text-slate-600 mt-2 mb-8 tracking-[0.2em]">IDENTITY VERIFICATION REQUIRED</p>
+				<a href="/login" class="inline-block w-full border border-slate-700 py-3 text-xs text-white hover:bg-white hover:text-black transition-all">GOTO_AUTH_TERMINAL</a>
+			</div>
+		</div>
+
+		<div id="app-content" class="opacity-0 pointer-events-none transition-opacity duration-1000">
+			<slot />
+		</div>
+
+		<script>
+			import { auth } from "../lib/firebase";
+			import { onAuthStateChanged } from "firebase/auth";
+
+			const lock = document.getElementById('lock-screen');
+			const content = document.getElementById('app-content');
+
+			onAuthStateChanged(auth, (user) => {
+				if (user) {
+					lock?.classList.add('opacity-0', 'pointer-events-none');
+					content?.classList.remove('opacity-0', 'pointer-events-none');
+				} else {
+					// If not on login page and not authed, force show lock
+					if (window.location.pathname !== '/login') {
+						lock?.classList.remove('opacity-0', 'pointer-events-none');
+						content?.classList.add('opacity-0', 'pointer-events-none');
+					}
+				}
+			});
+		</script>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
