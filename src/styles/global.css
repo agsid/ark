@@ -2,31 +2,49 @@
 
 @layer base {
   body {
-    @apply bg-[#F8FAFC] text-slate-900 font-sans antialiased overflow-x-hidden;
-    background-image: radial-gradient(circle at 1px 1px, #e2e8f0 1.5px, transparent 0);
-    background-size: 32px 32px;
+    @apply bg-[#F4F7F9] text-slate-900 font-sans antialiased overflow-x-hidden relative min-h-screen;
   }
+
+  /* The Mesh Gradient: Moving colors for the glass to refract */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: 
+      radial-gradient(circle at 15% 15%, rgba(249, 115, 22, 0.15) 0%, transparent 35%),
+      radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+      radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 45%);
+    filter: blur(80px);
+    animation: spatialOrbit 25s ease-in-out infinite alternate;
+  }
+
+  /* The Grain Overlay: Gives the glass a physical "frosted" texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.02;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+}
+
+@keyframes spatialOrbit {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(2%, 4%) scale(1.05); }
 }
 
 @layer components {
   .glass-surface {
-    /* We use white/70 here so it looks like thick glass on top of the light background */
-    background: rgba(255, 255, 255, 0.7); 
-    backdrop-filter: blur(40px) saturate(190%);
-    -webkit-backdrop-filter: blur(40px) saturate(190%);
-    border: 1px solid rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 0.3); 
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 
-        0 20px 40px -15px rgba(0, 0, 0, 0.05),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-    position: relative;
-  }
-
-  /* Specular Highlight for light mode should be subtle */
-  .glass-surface::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+      0 10px 40px -10px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 }

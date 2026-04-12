@@ -3,21 +3,21 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="ARK | Access Portal">
-    <div class="min-h-screen flex items-center justify-center p-4 md:p-8">
-        <div class="glass-surface w-full max-w-4xl min-h-[600px] rounded-[48px] shadow-2xl flex flex-col md:flex-row overflow-hidden transition-all duration-500 hover:scale-[1.005]">
+    <div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-slate-50 font-['Inter']">
+        <div class="glass-surface w-full max-w-4xl min-h-[600px] rounded-[48px] shadow-2xl shadow-orange-500/10 flex flex-col md:flex-row overflow-hidden transition-all duration-500 hover:scale-[1.005] border border-white bg-white/50 backdrop-blur-sm">
             
             <div class="md:w-5/12 bg-slate-900 p-10 md:p-12 flex flex-col justify-between text-white relative overflow-hidden">
-                <div class="absolute top-[-10%] right-[-10%] w-64 h-64 bg-indigo-500/20 blur-[80px] rounded-full"></div>
+                <div class="absolute top-[-10%] right-[-10%] w-64 h-64 bg-orange-500/20 blur-[80px] rounded-full"></div>
                 
                 <div class="relative z-10">
-                    <div class="w-12 h-12 border-2 border-indigo-400 rounded-2xl rotate-45 mb-12 flex items-center justify-center">
+                    <div class="w-12 h-12 border-2 border-orange-500 rounded-2xl rotate-45 mb-12 flex items-center justify-center shadow-lg shadow-orange-500/20">
                         <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
                     </div>
-                    <span class="text-[10px] font-black tracking-[0.5em] text-indigo-400 uppercase">ARK — Allied Relic Keeper</span>
-                    <h1 id="hero-text" class="text-5xl font-light tracking-tighter mt-6 leading-tight">
-                        Welcome <br/> <span class="font-medium text-indigo-300">Back.</span>
+                    <span class="text-[10px] font-black tracking-[0.5em] text-orange-500 uppercase">ARK — Allied Relic Keeper</span>
+                    <h1 id="hero-text" class="text-5xl font-light tracking-tighter mt-6 leading-tight text-white">
+                        Welcome <br/> <span class="font-medium text-orange-400">Back.</span>
                     </h1>
-                    <p id="hero-subtext" class="text-slate-400 mt-6 text-sm leading-relaxed max-w-[280px]">
+                    <p class="text-slate-400 mt-6 text-sm leading-relaxed max-w-[280px]">
                         Access your ARK and see real-time updates across your secure workspace.
                     </p>
                 </div>
@@ -27,42 +27,42 @@ import Layout from '../layouts/Layout.astro';
                 </div>
             </div>
 
-            <div class="md:w-7/12 bg-white/80 backdrop-blur-xl p-8 md:p-14 flex flex-col">
+            <div class="md:w-7/12 bg-white/90 backdrop-blur-xl p-8 md:p-14 flex flex-col">
                 
                 <div class="flex bg-slate-100/80 p-1 rounded-2xl mb-10 border border-slate-200 self-start w-full sm:w-auto">
-                    <button id="tab-login" class="px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all bg-white text-slate-900 shadow-sm">Login</button>
-                    <button id="tab-signup" class="px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600">Join ARK</button>
+                    <button id="tab-login" class="px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all bg-white text-orange-600 shadow-sm">Login</button>
+                    <button id="tab-signup" class="px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl text-slate-400 hover:text-orange-500 transition-all">Join ARK</button>
                 </div>
 
                 <form id="login-form" class="space-y-6 flex-grow">
                     <div class="group">
-                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-indigo-600 transition-colors">Email Address</label>
-                        <input type="email" id="login-email" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-slate-300" placeholder="name@example.com" required>
+                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-orange-600 transition-colors">Email Address</label>
+                        <input type="email" id="login-email" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500/50 transition-all placeholder:text-slate-300" placeholder="name@example.com" required>
                     </div>
                     <div class="group">
-                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-indigo-600 transition-colors">Password</label>
-                        <input type="password" id="login-password" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-slate-300" placeholder="••••••••" required>
+                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-orange-600 transition-colors">Password</label>
+                        <input type="password" id="login-password" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500/50 transition-all placeholder:text-slate-300" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" id="login-submit-btn" class="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 active:scale-[0.98] transition-all shadow-xl shadow-slate-200 uppercase text-[11px] tracking-widest">Initialize Session</button>
+                    <button type="submit" id="login-submit-btn" class="w-full py-4 bg-orange-600 text-white font-bold rounded-2xl hover:bg-orange-700 active:scale-[0.98] transition-all shadow-xl shadow-orange-600/20 uppercase text-[11px] tracking-widest">Initialize Session</button>
                     <div class="text-center">
-                        <button type="button" id="forgot-link" class="text-[11px] font-medium text-slate-400 hover:text-indigo-600 transition-colors bg-transparent border-none cursor-pointer">Forgot Password?</button>
+                        <button type="button" id="forgot-link" class="text-[11px] font-medium text-slate-400 hover:text-orange-600 transition-colors bg-transparent border-none cursor-pointer">Forgot Password?</button>
                     </div>
                 </form>
 
                 <form id="signup-form" class="hidden space-y-6 flex-grow">
                     <div class="group">
-                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-indigo-600 transition-colors">Email Address</label>
-                        <input type="email" id="signup-email" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all" placeholder="name@example.com" required>
+                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-orange-600 transition-colors">Email Address</label>
+                        <input type="email" id="signup-email" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500/50 transition-all" placeholder="name@example.com" required>
                     </div>
                     <div class="group">
-                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-indigo-600 transition-colors">Create Password</label>
-                        <input type="password" id="signup-password" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all" placeholder="Min. 6 characters" required>
+                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-orange-600 transition-colors">Create Password</label>
+                        <input type="password" id="signup-password" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500/50 transition-all" placeholder="Min. 6 characters" required>
                     </div>
                     <div class="group">
-                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-indigo-600 transition-colors">Confirm Password</label>
-                        <input type="password" id="signup-confirm" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all" placeholder="Repeat password" required>
+                        <label class="block ml-2 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 group-focus-within:text-orange-600 transition-colors">Confirm Password</label>
+                        <input type="password" id="signup-confirm" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-900 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500/50 transition-all" placeholder="Repeat password" required>
                     </div>
-                    <button type="submit" id="signup-submit-btn" class="w-full py-4 bg-slate-800 text-white font-bold rounded-2xl hover:bg-slate-700 active:scale-[0.98] transition-all shadow-xl shadow-indigo-100 uppercase text-[11px] tracking-widest">Join the Future</button>
+                    <button type="submit" id="signup-submit-btn" class="w-full py-4 bg-orange-600 text-white font-bold rounded-2xl hover:bg-orange-700 active:scale-[0.98] transition-all shadow-xl shadow-orange-600/20 uppercase text-[11px] tracking-widest">Join the Future</button>
                 </form>
 
                 <div id="social-section" class="mt-8 pt-8 border-t border-slate-100">
@@ -72,133 +72,108 @@ import Layout from '../layouts/Layout.astro';
                     </button>
                 </div>
 
-                <div id="messageBox" class="mt-6 p-4 rounded-2xl text-[12px] font-medium hidden border backdrop-blur-md animate-in fade-in slide-in-from-top-2"></div>
+                <div id="messageBox" class="mt-6 p-4 rounded-2xl text-[12px] font-medium hidden border"></div>
             </div>
         </div>
     </div>
 
     <script>
-        import { auth } from "../lib/firebase";
-        import {
-            signInWithEmailAndPassword,
-            createUserWithEmailAndPassword,
-            GoogleAuthProvider,
-            signInWithPopup,
-            sendPasswordResetEmail
+        import { auth, db } from "../lib/firebase";
+        import { 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            sendPasswordResetEmail 
         } from "firebase/auth";
+        import { doc, setDoc, getDoc } from "firebase/firestore";
 
         const tabLogin = document.getElementById('tab-login');
         const tabSignup = document.getElementById('tab-signup');
         const loginForm = document.getElementById('login-form') as HTMLFormElement;
         const signupForm = document.getElementById('signup-form') as HTMLFormElement;
         const heroText = document.getElementById('hero-text');
-        const heroSub = document.getElementById('hero-subtext');
         const messageBox = document.getElementById('messageBox');
-        const forgotLink = document.getElementById('forgot-link');
-
-        function getFriendlyMessage(errorCode: string) {
-            switch (errorCode) {
-                case 'auth/user-not-found': return "Account not found. Try signing up!";
-                case 'auth/wrong-password': return "Incorrect password. Please try again.";
-                case 'auth/email-already-in-use': return "Email already registered. Try logging in.";
-                case 'auth/weak-password': return "Password must be at least 6 characters.";
-                case 'auth/invalid-email': return "Please enter a valid email address.";
-                case 'auth/network-request-failed': return "Network error. Check your connection.";
-                default: return "Process failed. Please verify your details.";
-            }
-        }
 
         function showMessage(msg: string, type: 'error' | 'success') {
             if (!messageBox) return;
             messageBox.textContent = msg;
             messageBox.className = `mt-6 p-4 rounded-2xl text-[12px] font-medium border transition-all duration-300 ${
-                type === 'error' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                type === 'error' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-orange-50 text-orange-700 border-orange-200'
             }`;
             messageBox.classList.remove('hidden');
-            setTimeout(() => messageBox.classList.add('hidden'), 6000);
         }
 
-        // TABS
+        // --- TABS ---
         tabLogin?.addEventListener('click', () => {
-            tabLogin.className = 'px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl bg-white text-slate-900 shadow-sm transition-all';
-            tabSignup!.className = 'px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl text-slate-400 hover:text-slate-600 transition-all';
+            tabLogin.className = 'px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl bg-white text-orange-600 shadow-sm transition-all';
+            tabSignup!.className = 'px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl text-slate-400 hover:text-orange-500 transition-all';
             loginForm?.classList.remove('hidden');
             signupForm?.classList.add('hidden');
-            heroText!.innerHTML = 'Welcome <br/> <span class="font-medium text-indigo-300">Back.</span>';
+            if (heroText) heroText.innerHTML = 'Welcome <br/> <span class="font-medium text-orange-400">Back.</span>';
         });
 
         tabSignup?.addEventListener('click', () => {
-            tabSignup.className = 'px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl bg-white text-slate-900 shadow-sm transition-all';
-            tabLogin!.className = 'px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl text-slate-400 hover:text-slate-600 transition-all';
+            tabSignup.className = 'px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl bg-white text-orange-600 shadow-sm transition-all';
+            tabLogin!.className = 'px-8 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl text-slate-400 hover:text-orange-500 transition-all';
             signupForm?.classList.remove('hidden');
             loginForm?.classList.add('hidden');
-            heroText!.innerHTML = 'Join <br/> <span class="font-medium text-indigo-300">ARK.</span>';
+            if (heroText) heroText.innerHTML = 'Join <br/> <span class="font-medium text-orange-400">ARK.</span>';
         });
 
-        // FORGOT PASSWORD
-        forgotLink?.addEventListener('click', async () => {
-            const email = (document.getElementById('login-email') as HTMLInputElement).value;
-            if (!email) return showMessage("Enter your email address first.", 'error');
-            
+        // --- GOOGLE LOGIN (Fixed) ---
+        document.getElementById('google-btn')?.addEventListener('click', async () => {
             try {
-                await sendPasswordResetEmail(auth, email);
-                showMessage("Success! Reset link sent to your inbox.", 'success');
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+
+                // Try checking Firestore but don't crash if it's slow
+                try {
+                    const docRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (!docSnap.exists()) {
+                        await setDoc(docRef, { email: user.email, teamId: null, createdAt: new Date() });
+                        window.location.href = '/team';
+                    } else {
+                        const data = docSnap.data();
+                        window.location.href = data.teamId ? '/' : '/team';
+                    }
+                } catch (dbErr) {
+                    console.error("Firestore sync error:", dbErr);
+                    window.location.href = '/'; // Fallback
+                }
             } catch (err: any) {
-                showMessage(getFriendlyMessage(err.code), 'error');
+                if (err.code !== 'auth/popup-closed-by-user') {
+                    showMessage(`Auth failed: ${err.code}`, "error");
+                }
             }
         });
 
-        // LOGIN
+        // --- EMAIL LOGIN ---
         loginForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('login-submit-btn') as HTMLButtonElement;
-            btn.disabled = true;
-            btn.innerText = "AUTHENTICATING...";
-            
             const email = (document.getElementById('login-email') as HTMLInputElement).value;
             const pass = (document.getElementById('login-password') as HTMLInputElement).value;
-            
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
                 window.location.href = '/';
-            } catch (err: any) {
-                showMessage(getFriendlyMessage(err.code), 'error');
-                btn.disabled = false;
-                btn.innerText = "INITIALIZE SESSION";
-            }
+            } catch (err: any) { showMessage(err.message, 'error'); }
         });
 
-        // SIGNUP
+        // --- EMAIL SIGNUP ---
         signupForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('signup-submit-btn') as HTMLButtonElement;
+            const email = (document.getElementById('signup-email') as HTMLInputElement).value;
             const pass = (document.getElementById('signup-password') as HTMLInputElement).value;
             const confirm = (document.getElementById('signup-confirm') as HTMLInputElement).value;
-            
-            if (pass !== confirm) return showMessage("Passwords do not match.", 'error');
-            
-            btn.disabled = true;
-            btn.innerText = "CREATING PROTOCOL...";
-            
-            const email = (document.getElementById('signup-email') as HTMLInputElement).value;
+            if (pass !== confirm) return showMessage("Passwords do not match", "error");
             try {
-                await createUserWithEmailAndPassword(auth, email, pass);
-                window.location.href = '/';
-            } catch (err: any) {
-                showMessage(getFriendlyMessage(err.code), 'error');
-                btn.disabled = false;
-                btn.innerText = "JOIN THE FUTURE";
-            }
-        });
-
-        // GOOGLE
-        document.getElementById('google-btn')?.addEventListener('click', async () => {
-            try {
-                await signInWithPopup(auth, new GoogleAuthProvider());
-                window.location.href = '/';
-            } catch (err: any) {
-                if (err.code !== 'auth/popup-closed-by-user') showMessage(getFriendlyMessage(err.code), 'error');
-            }
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, "users", cred.user.uid), { email, teamId: null, createdAt: new Date() });
+                window.location.href = '/team';
+            } catch (err: any) { showMessage(err.message, 'error'); }
         });
     </script>
 </Layout>

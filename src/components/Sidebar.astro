@@ -1,0 +1,29 @@
+<aside class="fixed left-6 top-6 bottom-6 w-16 z-50">
+  <div class="glass-surface h-full !rounded-[32px] p-2 flex flex-col items-center shadow-2xl border-white/40">
+    
+    <div class="w-10 h-10 bg-slate-950 rounded-xl flex items-center justify-center text-orange-500 shadow-xl mb-8">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-width="2.5"/></svg>
+    </div>
+
+    <div class="flex flex-col gap-8 items-center flex-1 w-full">
+        <div class="flex flex-col items-center">
+            <div class="w-9 h-9 rounded-xl bg-orange-500/5 border border-orange-500/10 flex items-center justify-center">
+                <span id="side-temp" class="text-[10px] font-black text-orange-600 tracking-tighter">--</span>
+            </div>
+            <span class="text-[6px] font-black uppercase text-slate-400 mt-1">Temp</span>
+        </div>
+
+        <div class="flex flex-col items-center">
+            <div class="w-9 h-9 rounded-xl bg-blue-500/5 border border-blue-500/10 flex items-center justify-center">
+                <span id="side-hum" class="text-[10px] font-black text-blue-600 tracking-tighter">--</span>
+            </div>
+            <span class="text-[6px] font-black uppercase text-slate-400 mt-1">Hum</span>
+        </div>
+
+        <div class="w-8 h-px bg-slate-100"></div>
+
+        <div id="motion-log-stream" class="flex-1 flex flex-col items-center gap-1.5 overflow-hidden w-full py-2">
+            </div>
+    </div>
+  </div>
+</aside>

@@ -1,197 +1,177 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import GlassCard from '../components/GlassCard.astro';
+import GasGauge from '../components/GasGauge.astro';
+import SpatialMap from '../components/SpatialMap.astro';
+import Sidebar from '../components/Sidebar.astro';
 ---
 
 <Layout title="ARK | Command Center">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" is:inline></script>
 
-  <nav class="md:hidden flex border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-40">
-    <button id="tab-sensors" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-indigo-600 border-b-2 border-indigo-600">Containment</button>
-    <button id="tab-environment" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Atmosphere</button>
-    <button id="tab-map" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Telemetry</button>
-  </nav>
+  <div id="notification-center" class="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-xs space-y-2 pointer-events-none"></div>
 
-  <div class="fixed top-4 right-6 z-50 pointer-events-none select-none text-right">
-    <p class="text-[8px] font-mono font-bold text-slate-300 uppercase tracking-tighter">Live Telemetry</p>
-    <p class="text-[10px] font-mono font-black text-slate-400"><span id="raw-dist">--</span> CM</p>
-  </div>
-
-  <main class="p-4 md:p-10 bg-[#F8FAFC] min-h-screen">
-    <div class="max-w-7xl mx-auto">
+  <div class="relative min-h-screen w-full py-8">
+    <main id="dashboard-main" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 opacity-0 translate-y-4 transition-all duration-1000">
       
-      <header class="mb-10 hidden md:block">
-        <h2 class="text-3xl font-light tracking-tighter text-slate-900">Relic Containment <span class="font-bold text-indigo-600">Protocol</span></h2>
-        <p class="text-slate-400 text-sm mt-1">Real-time surveillance of Allied Relic Keeper (ARK) unit.</p>
-      </header>
-
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-        
-        <div id="section-sensors" class="md:col-span-7 lg:col-span-8 space-y-8">
-            <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-3">
-                <span class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
-                Active Security Arrays
-            </h3>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="p-8 rounded-[2.5rem] shadow-xl shadow-indigo-100/20 bg-white border border-white relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <p class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-1">Digital Signal</p>
-                            <h4 class="text-2xl font-black text-slate-900 tracking-tight">Box Lid</h4>
-                        </div>
-                        <div id="badge-lid" class="px-4 py-1.5 rounded-full text-[11px] font-black uppercase bg-slate-100 text-slate-400">Syncing</div>
-                    </div>
-                    <div class="flex items-center gap-4 mb-6">
-                        <span id="text-lid-status" class="text-6xl font-black text-slate-900 tracking-tighter">--</span>
-                    </div>
-                    <div class="h-24 w-full opacity-80">
-                        <canvas id="lidChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="p-8 rounded-[2.5rem] shadow-xl shadow-cyan-100/20 bg-white border border-white">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <p class="text-[10px] font-black text-cyan-600 uppercase tracking-[0.2em] mb-1">Internal Sensor</p>
-                            <h4 class="text-2xl font-black text-slate-900 tracking-tight">Relic Signature</h4>
-                        </div>
-                        <div id="badge-relic" class="px-4 py-1.5 rounded-full text-[11px] font-black uppercase bg-slate-100 text-slate-400">Syncing</div>
-                    </div>
-                    <div class="flex items-baseline gap-2 mb-6">
-                        <span id="dist-relic" class="text-5xl font-black text-slate-900 tabular-nums">--</span>
-                        <span class="text-xs font-bold text-slate-300">CM</span>
-                    </div>
-                    <div class="h-20 w-full opacity-50">
-                        <canvas id="relicChart"></canvas>
-                    </div>
-                </div>
+      <div class="lg:col-span-4 space-y-8">
+        <GlassCard title="Hardware Pulse">
+          <div class="flex justify-between items-end">
+            <h2 id="hw-time" class="text-5xl font-light text-slate-950 tracking-tight tabular-nums">--:--:--</h2>
+            <div class="pb-2">
+                <p id="display-uuid" class="text-[10px] font-black text-orange-600 uppercase tracking-widest italic">Node: ---</p>
             </div>
+          </div>
+          <button id="enable-notifs" class="mt-4 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-orange-500 transition-colors">
+            • Enable Browser Alerts
+          </button>
+        </GlassCard>
 
-            <div id="section-map" class="hidden md:block">
-                <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6">Global Telemetry (Houston, TX)</h3>
-                <div class="w-full h-80 bg-slate-200 rounded-[3rem] overflow-hidden relative border-4 border-white shadow-inner">
-                    <iframe 
-                        class="w-full h-full grayscale" 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d221612.44111361512!2d-95.54483783935272!3d29.816041699042636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8640b8b4488d8501%3A0xca0d02def365053b!2sHouston%2C%20TX!5e0!3m2!1sen!2sus!4v1710000000000!5m2!1sen!2sus" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy">
-                    </iframe>
-                </div>
-            </div>
-        </div>
+        <GlassCard title="Air Analysis">
+          <GasGauge />
+        </GlassCard>
 
-        <div id="section-environment" class="md:col-span-5 lg:col-span-4 space-y-8 hidden md:block">
-            <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">Atmospheric Analysis</h3>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Temp</p>
-                    <p class="text-2xl font-black text-slate-900"><span id="val-temp">--</span>°C</p>
-                </div>
-                <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Air Quality</p>
-                    <p class="text-2xl font-black text-slate-900"><span id="val-aqi">--</span></p>
-                </div>
-            </div>
-            <div class="bg-slate-900 rounded-[2.5rem] p-6 shadow-2xl">
-                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4">Thermal Stability</p>
-                <div class="h-40">
-                    <canvas id="envChart"></canvas>
-                </div>
-            </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass-surface p-7 rounded-[40px]">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Ambient Temp</p>
+            <h4 id="val-temp" class="text-3xl font-bold text-slate-950 mt-2 italic tracking-tighter">--°F</h4>
+          </div>
+          <div class="glass-surface p-7 rounded-[40px]">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Humidity</p>
+            <h4 id="val-hum" class="text-3xl font-bold text-slate-950 mt-2 italic tracking-tighter">--%</h4>
+          </div>
+          <div class="glass-surface p-7 rounded-[40px] col-span-2">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Barometric Pressure</p>
+            <h4 id="val-press" class="text-3xl font-bold text-slate-950 mt-2 italic tracking-tighter">-- hPa</h4>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
+
+      <div class="lg:col-span-8 space-y-8">
+        <SpatialMap />
+        <GlassCard title="Atmospheric Evolution">
+           <div class="h-56 md:h-64"><canvas id="tempChart"></canvas></div>
+        </GlassCard>
+      </div>
+    </main>
+  </div>
 
   <script>
-    import { db } from "../lib/firebase";
-    import { ref, onValue } from "firebase/database";
-    import Chart from 'chart.js/auto';
+    import { auth, db } from "../lib/firebase";
+    import { ref, onValue, get } from "firebase/database";
+    import L from 'leaflet';
 
-    const updateText = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = val;
-    };
+    let map: any, marker: any, tempChart: any;
+    let lastLidState: string | null = null;
+    let lastTemp: number | null = null;
+    const HOUSTON = [29.7604, -95.3698];
 
-    // 1. DIGITAL LID CHART
-    const lidChart = new Chart(document.getElementById('lidChart'), {
-        type: 'line',
-        data: { labels: Array(20).fill(''), datasets: [{ data: [], borderColor: '#6366f1', borderWidth: 3, pointRadius: 0, stepped: true, fill: true, backgroundColor: '#6366f115' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { min: -0.1, max: 1.1, ticks: { display: false }, grid: { display: false } } } }
-    });
-
-    const chartConfig = (color) => ({
-        type: 'line',
-        data: { labels: Array(15).fill(''), datasets: [{ data: [], borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.4, fill: false }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
-    });
-
-    const relicChart = new Chart(document.getElementById('relicChart'), chartConfig('#06b6d4'));
-    const envChart = new Chart(document.getElementById('envChart'), {
-        ...chartConfig('#818cf8'),
-        options: { ...chartConfig('#818cf8').options, scales: { x: { display: false }, y: { grid: { color: '#1e293b' }, ticks: { color: '#475569' } } } }
-    });
-
-    onValue(ref(db, 'sensor'), (snapshot) => {
-        const data = snapshot.val() || {};
-        const distValue = data.distance ?? 0;
-        const relicValue = data.relic_distance ?? 0;
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-        updateText('raw-dist', distValue.toFixed(3));
-        updateText('dist-relic', relicValue.toFixed(1));
-        updateText('val-temp', data.temp?.toFixed(1) || '--');
-        updateText('val-aqi', data.aqi || '--');
-
-        const isLidOpen = distValue > 10;
-        const binaryState = isLidOpen ? 1 : 0;
-        
-        const statusEl = document.getElementById('text-lid-status');
-        const badgeEl = document.getElementById('badge-lid');
-
-        if (statusEl) {
-            statusEl.innerText = isLidOpen ? "Open" : "Closed";
-            statusEl.className = isLidOpen ? 'text-6xl font-black text-rose-600' : 'text-6xl font-black text-slate-900';
+    // --- NOTIFICATION SYSTEM ---
+    async function requestNotifPermission() {
+      if ("Notification" in window) {
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+          sendNotification("System", "Browser notifications enabled.");
         }
+      }
+    }
 
-        if (badgeEl) {
-            badgeEl.innerText = isLidOpen ? `Breach @ ${timeStr}` : "Secured";
-            badgeEl.className = `px-4 py-1.5 rounded-full text-[11px] font-black uppercase border ${isLidOpen ? "bg-rose-50 text-rose-600 border-rose-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"}`;
+    function sendNotification(title: string, message: string) {
+      // 1. Internal UI Toast
+      const hub = document.getElementById('notification-center');
+      if (hub) {
+        const toast = document.createElement('div');
+        toast.className = `glass-surface !bg-white/95 p-3 !rounded-2xl shadow-xl flex items-center gap-3 border-l-4 border-l-orange-500 translate-y-[-10px] opacity-0 transition-all duration-300 pointer-events-auto`;
+        toast.innerHTML = `<div class="w-8 h-8 bg-orange-500 rounded-lg flex-shrink-0 flex items-center justify-center text-white"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-width="2.5"/></svg></div><div><p class="text-[10px] font-bold text-slate-900 leading-tight">${message}</p></div>`;
+        hub.appendChild(toast);
+        setTimeout(() => toast.classList.remove('translate-y-[-10px]', 'opacity-0'), 10);
+        setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 500); }, 4000);
+      }
+
+      // 2. Native Browser Notification (If window minimized)
+      if (document.hidden && Notification.permission === "granted") {
+        new Notification(title, { body: message, icon: "/favicon.svg" });
+      }
+    }
+
+    document.getElementById('enable-notifs')?.addEventListener('click', requestNotifPermission);
+
+    // --- DATA STREAM ---
+    function initEngines() {
+      const ctx = document.getElementById('tempChart') as HTMLCanvasElement;
+      tempChart = new Chart(ctx, {
+          type: 'line',
+          data: { labels: [], datasets: [{ data: [], borderColor: '#F97316', borderWidth: 4, tension: 0.4, fill: false, pointRadius: 0 }] },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { display: false }, ticks: { font: { size: 10, weight: '900' }, color: '#94a3b8' } } } }
+      });
+
+      map = L.map('map', { zoomControl: false, attributionControl: false }).setView(HOUSTON, 12);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png').addTo(map);
+      const orangeIcon = L.divIcon({ className: 'ark-position-marker', iconSize: [14, 14], iconAnchor: [7, 7] });
+      marker = L.marker(HOUSTON, { icon: orangeIcon }).addTo(map);
+    }
+
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) return;
+        const snap = await get(ref(db, `software/users/${user.uid}/linkedDevice`));
+        if (snap.exists()) {
+            initEngines();
+            const id = snap.val();
+            document.getElementById('display-uuid')!.innerText = `Node: ${id}`;
+            document.getElementById('dashboard-main')!.classList.remove('opacity-0', 'translate-y-4');
+            startStream(id);
         }
-
-        lidChart.data.datasets[0].data.push(binaryState);
-        lidChart.data.labels.push(timeStr);
-        if (lidChart.data.datasets[0].data.length > 20) {
-            lidChart.data.datasets[0].data.shift();
-            lidChart.data.labels.shift();
-        }
-        lidChart.update('none');
-
-        const pushData = (chart, val) => {
-            chart.data.datasets[0].data.push(val);
-            if (chart.data.datasets[0].data.length > 15) chart.data.datasets[0].data.shift();
-            chart.update('none');
-        };
-        pushData(relicChart, relicValue);
-        if (data.temp) pushData(envChart, data.temp);
     });
 
-    const tabs = ['sensors', 'environment', 'map'];
-    tabs.forEach(tab => {
-        const btn = document.getElementById(`tab-${tab}`);
-        btn?.addEventListener('click', () => {
-            tabs.forEach(t => {
-                const section = document.getElementById(`section-${t}`);
-                const tabBtn = document.getElementById(`tab-${t}`);
-                if (section) section.classList.add('hidden', 'md:block');
-                if (tabBtn) tabBtn.className = 'flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400';
-            });
-            const activeSection = document.getElementById(`section-${tab}`);
-            const activeBtn = document.getElementById(`tab-${tab}`);
-            if (activeSection) activeSection.classList.remove('hidden');
-            if (activeBtn) activeBtn.className = 'flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-indigo-600 border-b-2 border-indigo-600';
+    function startStream(id: string) {
+        onValue(ref(db, `hardware/${id}`), (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+
+            if (data.environment) {
+                const f = (data.environment.temp * 1.8) + 32;
+                document.getElementById('val-temp')!.innerText = `${f.toFixed(1)}°F`;
+                document.getElementById('val-hum')!.innerText = `${Math.round(data.environment.humidity)}%`;
+                document.getElementById('val-press')!.innerText = `${data.environment.pressure} hPa`;
+
+                // Sync Mini Sidebar
+                const sT = document.getElementById('side-temp');
+                const sH = document.getElementById('side-hum');
+                if(sT) sT.innerText = `${Math.round(f)}°`;
+                if(sH) sH.innerText = `${Math.round(data.environment.humidity)}%`;
+                
+                if (lastTemp !== null && Math.abs(f - lastTemp) > 3.0) {
+                  sendNotification("Climate Alert", "Rapid temperature spike detected.");
+                }
+                lastTemp = f;
+
+                if (tempChart.data.labels.length > 25) { 
+                  tempChart.data.labels.shift(); 
+                  tempChart.data.datasets[0].data.shift(); 
+                }
+                tempChart.data.labels.push(""); 
+                tempChart.data.datasets[0].data.push(f);
+                tempChart.update('none');
+            }
+
+            const d1 = data.motion?.sensor_1_cm || 0;
+            const currentState = d1 > 12 ? 'open' : 'closed';
+            if (lastLidState !== null && currentState !== lastLidState) {
+              sendNotification("Security Hub", currentState === 'open' ? "Perimeter Breached" : "Perimeter Secured");
+            }
+            lastLidState = currentState;
+
+            const hasGPS = data.gps && data.gps.lat !== 0 && data.gps.status !== "searching";
+            const targetPos = hasGPS ? [data.gps.lat, data.gps.lng] : HOUSTON;
+            marker.setLatLng(targetPos);
+            map.panTo(targetPos);
+
+            const locText = document.getElementById('geo-location-text');
+            if (locText) locText.innerText = hasGPS ? `${data.gps.lat.toFixed(4)}, ${data.gps.lng.toFixed(4)}` : "Houston, TX (Searching...)";
+            
+            document.getElementById('hw-time')!.innerText = data.last_seen || "--:--:--";
         });
-    });
+    }
   </script>
 </Layout>

@@ -1,0 +1,22 @@
+---
+import GlassCard from './GlassCard.astro';
+---
+
+<GlassCard class="!p-3 !rounded-[64px] h-[520px] relative overflow-hidden group">
+  <div id="map" class="w-full h-full rounded-[52px] z-0 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"></div>
+  
+  <div class="absolute bottom-10 left-10 right-10 flex flex-col md:flex-row gap-5 z-[1000]">
+    <div id="card-lid" class="flex-1 glass-surface py-5 px-8 !rounded-[28px] !bg-white/80 border-white/90 shadow-2xl transition-all duration-500">
+        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Lid Status (US1)</p>
+        <h5 id="text-lid" class="text-xs font-black text-slate-900 mt-2 uppercase tracking-tighter italic">Scanning...</h5>
+    </div>
+    <div id="card-art" class="flex-1 glass-surface py-5 px-8 !rounded-[28px] !bg-white/80 border-white/90 shadow-2xl transition-all duration-500">
+        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">Relic Slot (US2)</p>
+        <h5 id="text-art" class="text-xs font-black text-slate-900 mt-2 uppercase tracking-tighter italic">Monitoring...</h5>
+    </div>
+  </div>
+</GlassCard>
+
+<style>
+  :global(.leaflet-container) { background: transparent !important; }
+</style>
