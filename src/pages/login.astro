@@ -1,8 +1,6 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
 ---
-
-<Layout title="ARK | Access Portal">
     <div class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-slate-50 font-['Inter']">
         <div class="glass-surface w-full max-w-4xl min-h-[600px] rounded-[48px] shadow-2xl shadow-orange-500/10 flex flex-col md:flex-row overflow-hidden transition-all duration-500 hover:scale-[1.005] border border-white bg-white/50 backdrop-blur-sm">
             
@@ -176,4 +174,3 @@ import Layout from '../layouts/Layout.astro';
             } catch (err: any) { showMessage(err.message, 'error'); }
         });
     </script>
-</Layout>

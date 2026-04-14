@@ -1,66 +1,120 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import GlassCard from '../components/GlassCard.astro';
+import DashboardLayout from '../layouts/DashboardLayout.astro';
 ---
 
-<Layout title="Link Device | ARK">
-  <main class="relative min-h-screen flex items-center justify-center p-6 overflow-hidden">
-    <div class="absolute inset-0 z-0">
-        <div class="absolute top-1/4 left-1/3 w-96 h-96 bg-orange-500/10 blur-[120px] rounded-full animate-pulse"></div>
-        <div class="absolute bottom-1/3 right-1/4 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full"></div>
+<DashboardLayout title="ARK | Link Hardware">
+  <div class="max-w-md mx-auto pt-20 px-4">
+    <div class="text-center mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
+      <div class="inline-flex items-center justify-center size-16 rounded-3xl bg-orange-50 border border-orange-100 text-orange-600 mb-6 shadow-xs">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Link New Hardware</h1>
+      <p class="text-slate-500 text-sm mt-2">Connect your ARK node to begin telemetry sync.</p>
     </div>
 
-    <div class="relative z-10 w-full max-w-md">
-      <GlassCard class="!p-10 flex flex-col items-center text-center shadow-2xl">
-        <div class="w-16 h-16 bg-slate-950 rounded-[24px] flex items-center justify-center text-orange-500 mb-8 shadow-xl">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path d="M12 4v1m0 14v1m8-8h-1m-14 0h-1m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-            </svg>
+    <div class="bg-white border border-slate-200 rounded-[32px] shadow-sm p-8 animate-in fade-in zoom-in-95 duration-500 delay-150">
+      <form id="connect-form" class="space-y-6">
+        <div class="space-y-2">
+          <label for="deviceId" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-4">
+            Device Serial Number
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              id="deviceId" 
+              name="deviceId"
+              placeholder="ARK-586294" 
+              required
+              pattern="ARK-.*"
+              class="w-full h-14 px-6 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-mono text-sm focus:outline-hidden focus:ring-3 focus:ring-orange-500/15 focus:border-orange-500 transition-all placeholder:text-slate-300"
+            />
+            <div id="validation-hint" class="absolute right-4 top-4 text-orange-500 hidden">
+              <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+          </div>
         </div>
 
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tighter mb-2">Hardware Handshake</h1>
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-10">Enter UUID to bind software to hardware</p>
+        <button 
+          type="submit" 
+          id="submit-btn"
+          class="group w-full h-14 bg-slate-900 hover:bg-orange-600 text-white font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-slate-200 hover:shadow-orange-200"
+        >
+          <span id="btn-text">Initialize Connection</span>
+          <svg class="size-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14m-7-7 7 7-7 7"></path>
+          </svg>
+        </button>
+      </form>
 
-        <div class="w-full space-y-4">
-          <input 
-            type="text" 
-            id="uuid-input" 
-            placeholder="DEVICE UUID" 
-            class="w-full bg-slate-100/50 border border-white rounded-2xl px-6 py-4 text-center font-mono font-bold tracking-[0.3em] outline-none focus:ring-4 focus:ring-orange-500/10 transition-all"
-          />
-          <button 
-            id="link-btn" 
-            class="w-full bg-orange-500 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all active:scale-95 shadow-lg shadow-orange-200"
-          >
-            Initialize Link
-          </button>
-        </div>
-      </GlassCard>
-      
-      <p class="text-center mt-8">
-        <a href="/" class="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-orange-500 transition-colors">← Back to Terminal</a>
-      </p>
+      <div id="status-container" class="hidden mt-6 overflow-hidden transition-all duration-300">
+        <div id="status-msg" class="p-4 rounded-xl text-center text-xs font-semibold"></div>
+      </div>
     </div>
-  </main>
 
-  <script>
-    import { auth, db } from "../lib/firebase";
-    import { ref, set } from "firebase/database";
+    <p class="text-center mt-8 text-[11px] text-slate-400">
+      Need help? Contact the <a href="#" class="text-orange-600 font-bold hover:underline">Support Engineer</a>
+    </p>
+  </div>
+</DashboardLayout>
 
-    const btn = document.getElementById('link-btn');
-    const input = document.getElementById('uuid-input') as HTMLInputElement;
+<script>
+  // Select DOM Elements
+  const form = document.getElementById('connect-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const btnText = document.getElementById('btn-text');
+  const statusContainer = document.getElementById('status-container');
+  const statusMsg = document.getElementById('status-msg');
+  const deviceInput = document.getElementById('deviceId') as HTMLInputElement;
 
-    btn?.addEventListener('click', async () => {
-        const uuid = input.value.trim();
-        const user = auth.currentUser;
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const fullId = deviceInput.value.trim(); // e.g., "ARK-586294"
+    
+    // 1. Validation Logic
+    if (!fullId.startsWith('ARK-')) {
+      alert('Serial number must start with ARK-');
+      return;
+    }
 
-        if (uuid && user) {
-            // Save link in the software/users node
-            await set(ref(db, `software/users/${user.uid}/linkedDevice`), uuid);
-            window.location.href = "/"; // Go to dashboard
-        } else if (!user) {
-            alert("Please sign in first");
-        }
-    });
-  </script>
-</Layout>
+    // 2. Extract numeric ID for Firebase path
+    const numericId = fullId.replace('ARK-', '').trim();
+
+    // 3. UI Loading State
+    submitBtn.disabled = true;
+    if (btnText) btnText.textContent = "Verifying Node...";
+    submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+    // 4. Simulated Connection/Handshake
+    // In a real app, you might query Firebase here to ensure the node exists
+    setTimeout(() => {
+      // 5. Success State
+      if (statusContainer && statusMsg) {
+        statusContainer.classList.remove('hidden');
+        statusMsg.className = "p-4 rounded-xl text-center text-[11px] font-bold bg-green-50 text-green-700 border border-green-100 animate-in fade-in slide-in-from-top-2";
+        statusMsg.innerHTML = `Successfully linked <span class="font-mono">${fullId}</span>. Redirecting to Stream...`;
+      }
+
+      // 6. Persistence
+      // Store the numeric ID so the DashboardLayout listener can find the DB path
+      localStorage.setItem('ark_linked_node', numericId);
+
+      // 7. Redirect
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
+    }, 1200);
+  });
+
+  // Real-time Prefix enforcement
+  deviceInput?.addEventListener('input', () => {
+    if (deviceInput.value.length > 0 && !deviceInput.value.startsWith('ARK-')) {
+      deviceInput.value = 'ARK-' + deviceInput.value.replace('ARK-', '');
+    }
+  });
+</script>
