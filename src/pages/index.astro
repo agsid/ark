@@ -7,86 +7,103 @@ import Notifications from '../components/Notifications.astro';
 <DashboardLayout title="ARK | Live Telemetry">
   <Notifications />
   
-  <div class="space-y-6 pb-24 md:pb-6">
+  <div class="space-y-8 pb-24 md:pb-6">
     
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
       
-      <GlassCard class="p-4 flex flex-col items-center justify-center min-h-[140px]">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Temp</span>
-        <div class="relative size-20">
-          <svg class="size-full -rotate-90" viewBox="0 0 36 36">
-            <circle cx="18" cy="18" r="16" fill="none" class="stroke-slate-100" stroke-width="3"></circle>
-            <circle id="temp-gauge" cx="18" cy="18" r="16" fill="none" class="stroke-orange-500 transition-all duration-700" stroke-width="3" stroke-dasharray="0, 100" stroke-linecap="round"></circle>
-          </svg>
-          <div class="absolute inset-0 flex items-center justify-center text-lg font-semibold text-slate-900">
-            <span id="temp-val">--</span>°
+      <GlassCard class="p-6 flex flex-row items-center justify-between min-h-[180px]">
+        <div class="flex flex-col justify-between h-full">
+          <span class="text-[12px] font-bold uppercase tracking-widest text-slate-400">Temp</span>
+          <div class="text-3xl font-bold text-slate-900"><span id="temp-val">--</span>°<span class="text-lg">F</span></div>
+        </div>
+        <div class="relative w-7 h-28 bg-slate-100 rounded-full border-2 border-slate-200 overflow-hidden shadow-inner">
+          <div id="temp-fill" class="absolute bottom-0 w-full bg-gradient-to-t from-red-600 to-orange-400 transition-all duration-1000 ease-out" style="height: 0%"></div>
+          <div class="absolute inset-0 flex flex-col justify-between py-4 px-1 opacity-20">
+            {[...Array(6)].map(() => <div class="w-full h-[1.5px] bg-slate-900"></div>)}
           </div>
         </div>
       </GlassCard>
 
-      <GlassCard class="p-5 flex flex-col justify-between">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Humidity</span>
-        <div class="flex items-baseline gap-1">
-          <span id="hum-val" class="text-3xl font-light text-slate-900">--</span>
-          <span class="text-xs font-mono text-slate-400">%</span>
+      <GlassCard class="p-6 flex flex-col justify-between min-h-[180px]">
+        <span class="text-[12px] font-bold uppercase tracking-widest text-slate-400">Humidity</span>
+        <div class="relative flex items-center justify-center py-4">
+            <div class="text-3xl font-bold z-10 text-slate-900"><span id="hum-val">--</span><span class="text-lg text-slate-400">%</span></div>
+            <div class="absolute inset-0 flex items-center justify-center opacity-10">
+                <svg class="w-14 h-14 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12,20C8.69,20 6,17.31 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14C18,17.31 15.31,20 12,20Z" />
+                </svg>
+            </div>
         </div>
-        <div class="w-full h-1.5 bg-slate-100/50 rounded-full overflow-hidden">
+        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
           <div id="hum-bar" class="h-full bg-blue-500 transition-all duration-1000" style="width: 0%"></div>
         </div>
       </GlassCard>
 
-      <GlassCard class="p-5 flex flex-col justify-between">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pressure</span>
-        <div class="flex flex-col mt-2">
-          <span id="pres-val" class="text-3xl font-light text-slate-900 tabular-nums">10</span>
-          <span class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">hPa</span>
+      <GlassCard class="p-6 flex flex-col items-center justify-center min-h-[180px]">
+        <span class="text-[12px] font-bold uppercase tracking-widest text-slate-400 mb-2">Pressure</span>
+        <div class="relative size-24">
+          <svg class="size-full" viewBox="0 0 36 36">
+            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" stroke-width="3" stroke-dasharray="75, 100" stroke-linecap="round" class="rotate-[135deg] origin-center" />
+            <path id="pres-gauge" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#6366f1" stroke-width="3" stroke-dasharray="0, 100" stroke-linecap="round" class="rotate-[135deg] origin-center transition-all duration-1000" />
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center pt-2">
+            <span id="pres-val" class="text-base font-bold text-slate-900">--</span>
+            <span class="text-[9px] text-slate-400 font-mono font-bold">hPa</span>
+          </div>
         </div>
       </GlassCard>
 
-      <GlassCard class="p-5 flex flex-col justify-between">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Gas Index</span>
-        <div class="flex items-baseline gap-1">
-          <span id="gas-val" class="text-3xl font-light text-slate-900">--</span>
+      <GlassCard class="p-6 flex flex-col items-center justify-center min-h-[180px]">
+        <span class="text-[12px] font-bold uppercase tracking-widest text-slate-400 mb-2">Gas Index</span>
+        <div class="relative size-24">
+          <svg class="size-full" viewBox="0 0 36 36">
+            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f1f5f9" stroke-width="3" stroke-dasharray="75, 100" stroke-linecap="round" class="rotate-[135deg] origin-center" />
+            <path id="gas-gauge" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="0, 100" stroke-linecap="round" class="rotate-[135deg] origin-center transition-all duration-1000" />
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center pt-2">
+            <span id="gas-val" class="text-base font-bold text-slate-900">--</span>
+            <span id="gas-status" class="text-[8px] text-slate-400 font-bold uppercase">Safe</span>
+          </div>
         </div>
-        <div id="gas-status" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Scanning</div>
       </GlassCard>
 
-      <GlassCard class="p-5 bg-slate-900/90 border-slate-700/50 flex flex-col justify-between">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Vault Lid</span>
-        <span id="lid-status" class="text-xl font-bold uppercase tracking-tight text-white">---</span>
-        <div id="dist-1-led" class="size-2 rounded-full bg-slate-700 transition-all"></div>
+      <GlassCard class="p-6 bg-slate-900/95 border-slate-700/50 flex flex-col justify-between min-h-[180px]">
+        <span class="text-[12px] font-bold uppercase tracking-widest text-slate-500">Vault Lid</span>
+        <span id="lid-status" class="text-2xl font-black uppercase tracking-tight text-white">---</span>
+        <div id="dist-1-led" class="size-3 rounded-full bg-slate-700 transition-all"></div>
       </GlassCard>
 
-      <GlassCard class="p-5 bg-slate-900/90 border-slate-700/50 flex flex-col justify-between">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Artifact</span>
-        <span id="artifact-status" class="text-xl font-bold uppercase tracking-tight text-white">---</span>
-        <div id="dist-2-led" class="size-2 rounded-full bg-slate-700 transition-all"></div>
+      <GlassCard class="p-6 bg-slate-900/95 border-slate-700/50 flex flex-col justify-between min-h-[180px]">
+        <span class="text-[12px] font-bold uppercase tracking-widest text-slate-500">Artifact</span>
+        <span id="artifact-status" class="text-2xl font-black uppercase tracking-tight text-white">---</span>
+        <div id="dist-2-led" class="size-3 rounded-full bg-slate-700 transition-all"></div>
       </GlassCard>
 
     </div>
 
-    <GlassCard class="p-2 relative overflow-hidden group">
-      <div id="ark-map" class="h-[400px] w-full rounded-[26px] bg-slate-50 z-10"></div>
-      <button id="save-loc-btn" class="absolute bottom-8 right-8 z-[1000] bg-orange-600 text-white px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest shadow-2xl shadow-orange-600/40 hover:bg-orange-700 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+    <GlassCard class="p-4 relative overflow-hidden group">
+      <div id="ark-map" class="h-[500px] w-full rounded-[32px] bg-slate-50 z-10"></div>
+      <button id="save-loc-btn" class="absolute bottom-10 right-10 z-[1000] bg-orange-600 text-white px-8 py-4 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-2xl shadow-orange-600/40 hover:bg-orange-700 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
         Log Position
       </button>
     </GlassCard>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <GlassCard class="p-6">
-        <h3 class="text-[11px] font-bold text-slate-900 uppercase tracking-widest mb-6">Environment Metrics</h3>
-        <div class="h-64"><canvas id="envChart"></canvas></div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <GlassCard class="p-8">
+        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-8">Environment Metrics</h3>
+        <div class="h-80"><canvas id="envChart"></canvas></div>
       </GlassCard>
       
-      <GlassCard class="p-6">
-        <h3 class="text-[11px] font-bold text-slate-900 uppercase tracking-widest mb-6">Motion Analytics (CM)</h3>
-        <div class="h-64"><canvas id="motionChart"></canvas></div>
+      <GlassCard class="p-8">
+        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-8">Motion Analytics (CM)</h3>
+        <div class="h-80"><canvas id="motionChart"></canvas></div>
       </GlassCard>
     </div>
 
   </div>
 </DashboardLayout>
+
 <script>
   import Chart from 'chart.js/auto';
   import L from 'leaflet';
@@ -95,15 +112,8 @@ import Notifications from '../components/Notifications.astro';
   import { ref, onValue, push, serverTimestamp } from 'firebase/database';
 
   let currentCoords = { lat: 0, lng: 0 };
-  
-  // --- SYSTEM STATE TRACKER (For Notifications) ---
-  let systemState = {
-    lidOpen: false,
-    artifactPresent: true,
-    lastTemp: null
-  };
+  let systemState = { lidOpen: false, artifactPresent: true, lastTempF: null };
 
-  // --- 1. Notification Helper ---
   const sendAlert = (title, body) => {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(`ARK ALERT: ${title}`, { body, icon: '/favicon.svg' });
@@ -111,117 +121,89 @@ import Notifications from '../components/Notifications.astro';
     }
   };
 
-  // Request Permission on first interaction
-  window.addEventListener('click', () => {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, { once: true });
-
-  // --- 2. Map & Chart Init ---
   const map = L.map('ark-map', { zoomControl: false, attributionControl: false }).setView([0, 0], 2);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
-  const marker = L.marker([0, 0], { icon: L.divIcon({ className: 'ark-marker', iconSize: [14, 14], iconAnchor: [7, 7] }) }).addTo(map);
+  const marker = L.marker([0, 0], { icon: L.divIcon({ className: 'ark-marker', iconSize: [16, 16], iconAnchor: [8, 8] }) }).addTo(map);
 
   const envChart = new Chart(document.getElementById('envChart'), {
     type: 'line',
     data: { labels: [], datasets: [
-      { label: 'Temp', data: [], borderColor: '#ea580c', borderWidth: 2, pointRadius: 0, tension: 0.4 },
-      { label: 'Hum', data: [], borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, tension: 0.4 },
-      { label: 'Gas', data: [], borderColor: '#10b981', borderWidth: 2, pointRadius: 0, tension: 0.4 }
+      { label: 'Temp (F)', data: [], borderColor: '#ea580c', borderWidth: 3, pointRadius: 0, tension: 0.4 },
+      { label: 'Hum (%)', data: [], borderColor: '#3b82f6', borderWidth: 3, pointRadius: 0, tension: 0.4 },
+      { label: 'Gas', data: [], borderColor: '#10b981', borderWidth: 3, pointRadius: 0, tension: 0.4 }
     ]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { boxWidth: 8, font: { size: 9 } } } }, scales: { x: { display: false }, y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 } } } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { font: { size: 11, weight: 'bold' } } } }, scales: { x: { display: false }, y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } } } }
   });
 
   const motionChart = new Chart(document.getElementById('motionChart'), {
     type: 'line',
     data: { labels: [], datasets: [
-      { label: 'Lid Sensor', data: [], borderColor: '#6366f1', borderWidth: 2, pointRadius: 0, tension: 0.4 },
-      { label: 'Art. Sensor', data: [], borderColor: '#a855f7', borderWidth: 2, pointRadius: 0, tension: 0.4 }
+      { label: 'Lid Sensor', data: [], borderColor: '#6366f1', borderWidth: 3, pointRadius: 0, tension: 0.4 },
+      { label: 'Art. Sensor', data: [], borderColor: '#a855f7', borderWidth: 3, pointRadius: 0, tension: 0.4 }
     ]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { boxWidth: 8, font: { size: 9 } } } }, scales: { x: { display: false }, y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 } } } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { font: { size: 11, weight: 'bold' } } } }, scales: { x: { display: false }, y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } } } }
   });
 
-  // --- 3. Firebase Connectivity ---
-  auth.onAuthStateChanged(async (user) => {
+  auth.onAuthStateChanged((user) => {
     if (!user) return;
-
-    const userLinkRef = ref(db, `software/user/${user.uid}/linked_device`);
-    onValue(userLinkRef, (snapshot) => {
-      const activeId = snapshot.val() || "586294"; 
-      const deviceRef = ref(db, `hardware/${activeId}`);
-      
-      onValue(deviceRef, (hwSnapshot) => {
-        const data = hwSnapshot.val();
+    onValue(ref(db, `software/user/${user.uid}/linked_device`), (snap) => {
+      const activeId = snap.val() || "586294"; 
+      onValue(ref(db, `hardware/${activeId}`), (hwSnap) => {
+        const data = hwSnap.val();
         if (!data) return;
 
-        const { environment, motion, last_seen, last_seen_gps } = data;
+        if (data.environment) {
+          // Celsius to Fahrenheit conversion
+          const tempF = (data.environment.temp * 9/5) + 32;
+          
+          // Thermometer logic (Assuming 32F to 122F range)
+          const tempPercent = Math.min(Math.max(((tempF - 32) / (122 - 32)) * 100, 0), 100);
+          document.getElementById('temp-val').textContent = tempF.toFixed(1);
+          document.getElementById('temp-fill').style.height = `${tempPercent}%`;
 
-        // --- ENVIRONMENT LOGIC ---
-        if (environment) {
-          document.getElementById('temp-val').textContent = environment.temp.toFixed(1);
-          document.getElementById('temp-gauge').setAttribute('stroke-dasharray', `${(environment.temp / 50) * 100}, 100`);
-          document.getElementById('hum-val').textContent = Math.round(environment.humidity);
-          document.getElementById('hum-bar').style.width = `${environment.humidity}%`;
-          document.getElementById('pres-val').textContent = Math.round(environment.pressure);
-          document.getElementById('gas-val').textContent = Math.round(environment.gas);
+          document.getElementById('hum-val').textContent = Math.round(data.environment.humidity);
+          document.getElementById('hum-bar').style.width = `${data.environment.humidity}%`;
 
-          // Anomaly Check: Temp jump > 2.5 degrees
-          if (systemState.lastTemp !== null && Math.abs(environment.temp - systemState.lastTemp) > 2.5) {
-            sendAlert("Environment Change", `Rapid temp shift detected: ${environment.temp.toFixed(1)}°C`);
+          const presNorm = ((data.environment.pressure - 950) / (1050 - 950)) * 75;
+          document.getElementById('pres-val').textContent = Math.round(data.environment.pressure);
+          document.getElementById('pres-gauge').setAttribute('stroke-dasharray', `${Math.min(Math.max(presNorm,0),75)}, 100`);
+
+          const gasNorm = (data.environment.gas / 500) * 75;
+          document.getElementById('gas-val').textContent = Math.round(data.environment.gas);
+          document.getElementById('gas-gauge').setAttribute('stroke-dasharray', `${Math.min(Math.max(gasNorm,0),75)}, 100`);
+          
+          if (systemState.lastTempF && Math.abs(tempF - systemState.lastTempF) > 5) {
+            sendAlert("Environment Change", `Temp swung to ${tempF.toFixed(1)}°F`);
           }
-          systemState.lastTemp = environment.temp;
+          systemState.lastTempF = tempF;
+          
+          // Chart Update
+          const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+          envChart.data.labels.push(time);
+          envChart.data.datasets[0].data.push(tempF);
+          envChart.data.datasets[1].data.push(data.environment.humidity);
+          envChart.data.datasets[2].data.push(data.environment.gas);
         }
 
-        // --- MOTION LOGIC (Lid & Artifact) ---
-        if (motion) {
-          const s1 = motion.sensor_1_cm || 0;
-          const s2 = motion.sensor_2_cm || 0;
-
-          // Lid Check (S1 > 10 is open)
-          const currentLidOpen = s1 > 10;
-          const lidEl = document.getElementById('lid-status');
-          lidEl.textContent = currentLidOpen ? "OPENED" : "CLOSED";
-          lidEl.className = currentLidOpen ? "text-lg font-bold text-orange-500 animate-pulse" : "text-lg font-bold text-emerald-500";
-          document.getElementById('dist-1-led').className = currentLidOpen ? "size-1.5 rounded-full bg-orange-500 animate-ping" : "size-1.5 rounded-full bg-emerald-500";
-
-          if (currentLidOpen !== systemState.lidOpen) {
-            if (currentLidOpen) sendAlert("Security", "Vault Lid has been OPENED.");
-            systemState.lidOpen = currentLidOpen;
-          }
-
-          // Artifact Check (S2 > 10 is missing)
-          const currentArtMissing = s2 > 10;
-          const artEl = document.getElementById('artifact-status');
-          artEl.textContent = currentArtMissing ? "MISSING" : "SECURED";
-          artEl.className = currentArtMissing ? "text-lg font-bold text-red-500 animate-bounce" : "text-lg font-bold text-blue-400";
-          document.getElementById('dist-2-led').className = currentArtMissing ? "size-1.5 rounded-full bg-red-500 animate-ping" : "size-1.5 rounded-full bg-blue-400";
-
-          if (currentArtMissing !== !systemState.artifactPresent) {
-            if (currentArtMissing) sendAlert("Critical", "The Artifact has been REMOVED!");
-            systemState.artifactPresent = !currentArtMissing;
-          }
+        if (data.motion) {
+          const isLidOpen = data.motion.sensor_1_cm > 10;
+          document.getElementById('lid-status').textContent = isLidOpen ? "OPENED" : "CLOSED";
+          document.getElementById('lid-status').className = isLidOpen ? "text-2xl font-black text-orange-500 animate-pulse" : "text-2xl font-black text-emerald-500";
+          
+          const isArtMissing = data.motion.sensor_2_cm > 10;
+          document.getElementById('artifact-status').textContent = isArtMissing ? "MISSING" : "SECURED";
+          document.getElementById('artifact-status').className = isArtMissing ? "text-2xl font-black text-red-500 animate-bounce" : "text-2xl font-black text-blue-400";
+          
+          motionChart.data.labels.push(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
+          motionChart.data.datasets[0].data.push(data.motion.sensor_1_cm);
+          motionChart.data.datasets[1].data.push(data.motion.sensor_2_cm);
         }
 
-        // --- GPS & HEADER ---
-        if (window.updateHeaderStatus) window.updateHeaderStatus(activeId, last_seen);
-        if (data.gps && data.gps.lat) {
-            currentCoords = { lat: data.gps.lat, lng: data.gps.lng };
-            marker.setLatLng([currentCoords.lat, currentCoords.lng]);
-            map.panTo([currentCoords.lat, currentCoords.lng]);
+        if (data.gps?.lat) {
+          currentCoords = { lat: data.gps.lat, lng: data.gps.lng };
+          marker.setLatLng([currentCoords.lat, currentCoords.lng]);
+          map.panTo([currentCoords.lat, currentCoords.lng]);
         }
-
-        // --- CHARTS UPDATE ---
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-        
-        envChart.data.labels.push(time);
-        envChart.data.datasets[0].data.push(environment.temp);
-        envChart.data.datasets[1].data.push(environment.humidity);
-        envChart.data.datasets[2].data.push(environment.gas);
-
-        motionChart.data.labels.push(time);
-        motionChart.data.datasets[0].data.push(motion.sensor_1_cm);
-        motionChart.data.datasets[1].data.push(motion.sensor_2_cm);
 
         [envChart, motionChart].forEach(c => {
           if (c.data.labels.length > 30) {
@@ -232,15 +214,9 @@ import Notifications from '../components/Notifications.astro';
         });
       });
     });
-
-    // Save Location History
-    document.getElementById('save-loc-btn')?.addEventListener('click', async () => {
-      try {
-        await push(ref(db, `software/user/${user.uid}/location_history`), { ...currentCoords, capturedAt: serverTimestamp() });
-        const btn = document.getElementById('save-loc-btn');
-        btn.textContent = "Saved ✓";
-        setTimeout(() => { btn.textContent = "Log Position"; }, 2000);
-      } catch (err) { console.error(err); }
-    });
   });
 </script>
+
+<style is:global>
+  .ark-marker { background: #ea580c; border: 4px solid white; border-radius: 50%; box-shadow: 0 0 20px rgba(234, 88, 12, 0.6); }
+</style>
