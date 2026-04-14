@@ -1,36 +1,13 @@
 ---
+// src/components/GlassCard.astro
 interface Props {
-  title?: string;
   class?: string;
 }
-const { title, class: className } = Astro.props;
+const { class: className } = Astro.props;
 ---
-
-<div class={`
-  relative overflow-hidden
-  backdrop-blur-2xl bg-white/[0.03] 
-  border border-white/10 
-  p-8 rounded-[48px] 
-  shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]
-  group transition-all duration-500 hover:border-orange-500/30
-  ${className}
-`}>
-  <div class="absolute -top-12 -right-12 w-32 h-32 bg-orange-500/5 blur-[60px] rounded-full group-hover:bg-orange-500/15 transition-all duration-700"></div>
-  
-  {title && (
-    <p class="relative z-10 text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-6 group-hover:text-orange-500/80 transition-colors">
-      {title}
-    </p>
-  )}
-
-  <div class="relative z-10">
-    <slot />
-  </div>
+<div class:list={[
+  "bg-white/70 backdrop-blur-md border border-white/20 rounded-[32px] shadow-xl",
+  className
+]}>
+  <slot />
 </div>
-
-<style>
-  /* Optional: Adds a very fine inner highlight to the top edge */
-  .glass-pod {
-    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
-  }
-</style>

@@ -1,44 +1,76 @@
 ---
 // src/components/Header.astro
 ---
-<header id="topbar" class="fixed top-3 left-[98px] right-[14px] h-[56px] bg-white rounded-full shadow-sm z-50 flex items-center justify-between px-6 border border-slate-100">
+<header id="topbar" class="fixed top-3 left-[98px] right-[14px] h-[56px] bg-white/70 backdrop-blur-md border border-white/20 rounded-full shadow-lg z-50 flex items-center justify-between px-6">
   <div class="flex items-center gap-1.5 text-[11px] font-mono text-slate-400">
     <span>hardware</span>
-    <span class="text-slate-200">/</span>
-    <span id="tb-node" class="text-slate-600 font-bold bg-slate-50 px-2 py-0.5 rounded border border-slate-100">NO-LINK</span>
-    <span class="text-slate-200">/</span>
-    <span id="tb-section" class="text-orange-600 font-medium lowercase italic">environment</span>
+    <span class="text-slate-300">/</span>
+    <span id="tb-node" class="text-slate-600 font-bold bg-white/50 px-2 py-0.5 rounded border border-white/40 uppercase tracking-tighter">NO-LINK</span>
+    <span class="text-slate-300">/</span>
+    <span id="tb-section" class="text-orange-600 font-medium lowercase italic">telemetry</span>
   </div>
 
   <div class="flex items-center gap-2">
-    <div id="conn-pill" class="flex items-center gap-2 px-3 py-1 border border-slate-200 bg-slate-50 rounded-full text-[9px] font-bold text-slate-400 [&.live]:bg-green-50 [&.live]:text-green-600 [&.live]:border-green-200 transition-all">
-      <span class="size-1.5 rounded-full bg-current animate-pulse"></span>
-      <span id="conn-status">WAITING</span>
+    <div id="conn-pill" class="flex items-center gap-2 px-3 py-1 border border-slate-200 bg-slate-50/50 rounded-full text-[9px] font-bold text-slate-400 transition-all duration-500">
+      <span id="conn-indicator" class="size-1.5 rounded-full bg-current"></span>
+      <span id="conn-status">CONNECTING</span>
     </div>
-    <div class="hidden md:flex items-center gap-1.5 px-3 py-1 border border-slate-200 bg-slate-50 rounded-full text-[9px] font-bold text-slate-400">
+    
+    <div class="hidden md:flex items-center gap-1.5 px-3 py-1 border border-white/40 bg-white/30 rounded-full text-[9px] font-bold text-slate-500 shadow-sm">
       <span id="tb-lastseen">--:--:--</span>
     </div>
   </div>
 </header>
 
+<style is:global>
+  /* Status Classes */
+  .is-live {
+    background-color: rgba(240, 253, 244, 0.6) !important;
+    color: #16a34a !important;
+    border-color: rgba(187, 247, 208, 0.8) !important;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+  }
+  
+  .animate-glow {
+    animation: glow 1.5s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+</style>
+
 <script>
-  window.setLive = (displayId) => {
-    const nodeEl = document.getElementById('tb-node');
-    const pill = document.getElementById('conn-pill');
-    const statusTxt = document.getElementById('conn-status');
-    if (nodeEl) nodeEl.textContent = displayId;
-    if (pill) pill.classList.add('live');
+  // Elements
+  const nodeEl = document.getElementById('tb-node');
+  const pill = document.getElementById('conn-pill');
+  const indicator = document.getElementById('conn-indicator');
+  const statusTxt = document.getElementById('conn-status');
+  const lastSeenEl = document.getElementById('tb-lastseen');
+
+  window.updateHeaderStatus = (deviceId, timestamp) => {
+    // 1. Update ID
+    if (nodeEl && deviceId) {
+        nodeEl.textContent = deviceId.toString().startsWith('ARK') ? deviceId : `ARK-${deviceId}`;
+    }
+
+    // 2. Set Live State
+    if (pill) pill.classList.add('is-live');
+    if (indicator) indicator.classList.add('animate-glow');
     if (statusTxt) statusTxt.textContent = 'LIVE';
+
+    // 3. Update Time
+    if (lastSeenEl && timestamp) {
+        // If timestamp is just a string like "11:18:58 AM", show it directly
+        // Otherwise, format if it's a full Date string
+        lastSeenEl.textContent = timestamp;
+    }
   };
 
-  window.setLastSeen = (time) => {
-    const lastSeenEl = document.getElementById('tb-lastseen');
-    if (lastSeenEl) lastSeenEl.textContent = time;
-  };
-
+  // Check for saved node on init
   const savedNode = localStorage.getItem('ark_linked_node');
-  if (savedNode) {
-    const nodeEl = document.getElementById('tb-node');
-    if (nodeEl) nodeEl.textContent = `ARK-${savedNode}`;
+  if (savedNode && nodeEl) {
+    nodeEl.textContent = `ARK-${savedNode}`;
   }
 </script>

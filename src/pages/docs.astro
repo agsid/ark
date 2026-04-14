@@ -1,0 +1,124 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import GlassCard from '../components/GlassCard.astro';
+---
+
+<DashboardLayout title="ARK | Documentation">
+  <div class="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto px-4 py-8">
+    
+    <aside class="md:w-64 flex-shrink-0">
+      <div class="sticky top-24 space-y-8">
+        <div>
+          <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-orange-500 mb-4">Core System</h3>
+          <ul class="space-y-3 text-sm font-medium text-slate-500">
+            <li><a href="#introduction" class="hover:text-orange-600 transition-colors">Introduction</a></li>
+            <li><a href="#hardware" class="hover:text-orange-600 transition-colors">Hardware Architecture</a></li>
+            <li><a href="#telemetry" class="hover:text-orange-600 transition-colors">Telemetry Specs</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4">Security Protocol</h3>
+          <ul class="space-y-3 text-sm font-medium text-slate-500">
+            <li><a href="#vault-logic" class="hover:text-orange-600 transition-colors">Vault Lid Logic</a></li>
+            <li><a href="#artifact" class="hover:text-orange-600 transition-colors">Artifact Monitoring</a></li>
+            <li><a href="#alerts" class="hover:text-orange-600 transition-colors">System Notifications</a></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-grow space-y-16 pb-24">
+      
+      <section id="introduction">
+        <GlassCard class="p-12 bg-slate-900 text-white relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 blur-[100px] rounded-full"></div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-orange-500">Documentation</span>
+          <h1 class="text-5xl font-light tracking-tighter mt-4">ARK Protocol <br/> <span class="font-medium text-orange-400">Reference.</span></h1>
+          <p class="text-slate-400 mt-6 max-w-xl leading-relaxed">
+            The Allied Relic Keeper (ARK) is a high-fidelity monitoring system designed for the secure tracking of sensitive artifacts through real-time telemetry and proximity flux analysis.
+          </p>
+        </GlassCard>
+      </section>
+
+      <section id="hardware" class="scroll-mt-24">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+          <span class="size-2 bg-orange-500 rounded-full"></span>
+          Hardware Architecture
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <GlassCard class="p-6">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Environmental Node</h4>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Equipped with a Bosch BME680 sensor suite for 4-in-1 measurement: gas, humidity, temperature, and pressure.
+            </p>
+          </GlassCard>
+          <GlassCard class="p-6">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Proximity Array</h4>
+            <h5 class="text-sm font-bold text-slate-800">Ultrasonic Distance Sensors</h5>
+            <p class="text-sm text-slate-600 mt-2">
+              Dual HC-SR04 modules calibrated for precise depth measurement within the vault enclosure.
+            </p>
+          </GlassCard>
+        </div>
+      </section>
+
+      <section id="telemetry" class="scroll-mt-24">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">Telemetry Data Keys</h2>
+        <GlassCard class="overflow-hidden">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-100">
+                <th class="p-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Key</th>
+                <th class="p-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Description</th>
+                <th class="p-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Unit</th>
+              </tr>
+            </thead>
+            <tbody class="text-sm font-mono text-slate-600">
+              <tr class="border-b border-slate-50">
+                <td class="p-4 text-orange-600">environment/temp</td>
+                <td class="p-4">Ambient enclosure temperature</td>
+                <td class="p-4">Celsius</td>
+              </tr>
+              <tr class="border-b border-slate-50">
+                <td class="p-4 text-orange-600">motion/sensor_1_cm</td>
+                <td class="p-4">Lid closure distance</td>
+                <td class="p-4">Centimeters</td>
+              </tr>
+              <tr>
+                <td class="p-4 text-orange-600">environment/gas</td>
+                <td class="p-4">VOC Gas index</td>
+                <td class="p-4">VOC Score</td>
+              </tr>
+            </tbody>
+          </table>
+        </GlassCard>
+      </section>
+
+      <section id="vault-logic" class="scroll-mt-24">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">Security Thresholds</h2>
+        <div class="bg-orange-50/50 border border-orange-100 rounded-[32px] p-8">
+          <p class="text-orange-900 font-medium mb-4">The ARK Dashboard uses semantic logic to process distance values:</p>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-4">
+              <span class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded mt-1">LID</span>
+              <p class="text-sm text-slate-700 font-mono">if (sensor_1 > 10) status = "OPENED"</p>
+            </li>
+            <li class="flex items-start gap-4">
+              <span class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded mt-1">ARTIFACT</span>
+              <p class="text-sm text-slate-700 font-mono">if (sensor_2 > 10) status = "MISSING"</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</DashboardLayout>
+
+<style>
+  /* Smooth scroll for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+// src/components/Notifications.astro
+---
+
+<script>
+  /**
+   * ARK Notification System
+   * Uses the native Browser Notification API for system-level popups.
+   */
+
+  // 1. Initialize the system
+  const initNotifications = () => {
+    if (!("Notification" in window)) {
+      console.warn("This browser does not support desktop notifications.");
+      return;
+    }
+
+    // Request permission on the first user interaction to satisfy browser security
+    if (Notification.permission === "default") {
+      const askPermission = () => {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            console.log("Notification permission granted.");
+            // Optional: Send a test welcome notification
+            new Notification("ARK System", { body: "Security alerts are now active." });
+          }
+        });
+        window.removeEventListener('click', askPermission);
+      };
+      
+      window.addEventListener('click', askPermission);
+    }
+  };
+
+  /**
+   * Global Alert Function
+   * Accessible via window.sendSystemAlert(title, message)
+   */
+  window.sendSystemAlert = (title, message, urgency = 'normal') => {
+    if (Notification.permission === "granted") {
+      const options = {
+        body: message,
+        icon: "/favicon.svg", // Ensure this path is correct in your public folder
+        silent: false,
+        badge: "/favicon.svg",
+      };
+
+      const n = new Notification(`ARK | ${title}`, options);
+
+      // Simple click handler to focus the dashboard tab
+      n.onclick = () => {
+        window.focus();
+        n.close();
+      };
+
+      // Trigger vibration for mobile devices
+      if (urgency === 'critical' && navigator.vibrate) {
+        navigator.vibrate([300, 100, 300, 100, 300]);
+      }
+    } else {
+      console.warn("Notifications are blocked or not yet permitted.");
+    }
+  };
+
+  // Run init
+  initNotifications();
+</script>   
