@@ -14,8 +14,8 @@ const { title = "ARK Dashboard" } = Astro.props;
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#f5f4f0" />
-  <link rel="apple-touch-icon" href="/favicon.png" />
-<link rel="icon" href="/favicon.png" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+  <link rel="icon" href="/favicon1.png" type="image/x-icon" />
   <title>{title}</title>
 
   <script>
@@ -23,7 +23,6 @@ const { title = "ARK Dashboard" } = Astro.props;
     import { onAuthStateChanged } from 'firebase/auth';
     import { ref, onValue } from 'firebase/database';
 
-    // Global Auth & Data Sync
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const nodeId = localStorage.getItem('ark_linked_node');
@@ -43,16 +42,17 @@ const { title = "ARK Dashboard" } = Astro.props;
   </script>
 </head>
 
-<body class="bg-[#f5f4f0] text-slate-700 font-sans antialiased min-h-screen">
-<div class="w-full"><Sidebar /></div>
+<body class="bg-[#f5f4f0] text-slate-700 font-sans antialiased min-h-screen overflow-x-hidden">
+  <Sidebar />
+  
   <Header />
   
   <main 
     class="transition-all duration-500 ease-in-out
-           /* Desktop: Shift for sidebar */a
-           md:ml-[98px] md:pt-24 md:pb-10 md:pr-6 md:pl-2 
-           /* Mobile: Centered content, extra bottom space for Nav Pill */
-           max-md:px-4 max-md:pt-24 max-md:pb-32"
+           /* Desktop: Left margin accounts for sidebar width + gap */
+           md:ml-[100px] md:pt-28 md:pb-10 md:pr-8 
+           /* Mobile: Bottom padding accounts for the Bottom Nav Bar + Safe Area */
+           max-md:px-4 max-md:pt-24 max-md:pb-[calc(100px+env(safe-area-inset-bottom))]"
   >
     <div class="max-w-7xl mx-auto">
       <slot />
@@ -61,18 +61,25 @@ const { title = "ARK Dashboard" } = Astro.props;
 
   <style is:global>
     :root {
-      /* Safe area variables for Swift-like connection to iOS/Android hardware */
       --sat: env(safe-area-inset-top);
       --sab: env(safe-area-inset-bottom);
     }
 
-    /* Prevent text selection to feel more like a native app */
+    /* Native App Feel */
     body {
       -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
       user-select: none;
+      /* Smooth scrolling for anchor links */
+      scroll-behavior: smooth;
     }
 
-    /* Adjusting the Header for Mobile Notch */
+    /* Target the topbar specifically if it's an ID inside the Header component */
+    #topbar {
+      position: fixed;
+      z-index: 50;
+    }
+
     @media (max-width: 768px) {
       #topbar {
         top: calc(12px + var(--sat));
@@ -80,6 +87,21 @@ const { title = "ARK Dashboard" } = Astro.props;
         right: 14px;
         height: 52px;
       }
+    }
+    
+    /* Custom Scrollbar for a cleaner look */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e2e8f0;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #cbd5e1;
     }
   </style>
 </body>
