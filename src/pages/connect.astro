@@ -4,117 +4,125 @@ import DashboardLayout from '../layouts/DashboardLayout.astro';
 
 <DashboardLayout title="ARK | Link Hardware">
   <div class="max-w-md mx-auto pt-20 px-4">
-    <div class="text-center mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
-      <div class="inline-flex items-center justify-center size-16 rounded-3xl bg-orange-50 border border-orange-100 text-orange-600 mb-6 shadow-xs">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-        </svg>
-      </div>
-      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Link New Hardware</h1>
-      <p class="text-slate-500 text-sm mt-2">Connect your ARK node to begin telemetry sync.</p>
+    <div class="text-center mb-10">
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Link Hardware</h1>
+      <p class="text-slate-500 text-sm mt-2">Enter the device serial number to link it to your account.</p>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-[32px] shadow-sm p-8 animate-in fade-in zoom-in-95 duration-500 delay-150">
+    <div class="bg-white border border-slate-200 rounded-[32px] shadow-sm p-8">
       <form id="connect-form" class="space-y-6">
         <div class="space-y-2">
           <label for="deviceId" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-4">
-            Device Serial Number
+            Serial Number
           </label>
-          <div class="relative">
-            <input 
-              type="text" 
-              id="deviceId" 
-              name="deviceId"
-              placeholder="ARK-586294" 
-              required
-              pattern="ARK-.*"
-              class="w-full h-14 px-6 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-mono text-sm focus:outline-hidden focus:ring-3 focus:ring-orange-500/15 focus:border-orange-500 transition-all placeholder:text-slate-300"
-            />
-            <div id="validation-hint" class="absolute right-4 top-4 text-orange-500 hidden">
-              <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-            </div>
-          </div>
+          <input 
+            type="text" 
+            id="deviceId" 
+            name="deviceId"
+            placeholder="ARK-000000" 
+            required
+            class="w-full h-14 px-6 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-mono text-sm focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all"
+          />
         </div>
 
         <button 
           type="submit" 
           id="submit-btn"
-          class="group w-full h-14 bg-slate-900 hover:bg-orange-600 text-white font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-slate-200 hover:shadow-orange-200"
+          class="w-full h-14 bg-slate-900 hover:bg-orange-600 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-3"
         >
-          <span id="btn-text">Initialize Connection</span>
-          <svg class="size-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M5 12h14m-7-7 7 7-7 7"></path>
-          </svg>
+          <span id="btn-text">Connect Device</span>
         </button>
       </form>
 
-      <div id="status-container" class="hidden mt-6 overflow-hidden transition-all duration-300">
-        <div id="status-msg" class="p-4 rounded-xl text-center text-xs font-semibold"></div>
+      <div id="status-container" class="hidden mt-6 p-4 rounded-xl text-center text-[11px] font-bold border">
       </div>
     </div>
 
     <p class="text-center mt-8 text-[11px] text-slate-400">
-      Need help? Contact the <a href="#" class="text-orange-600 font-bold hover:underline">Support Engineer</a>
+      Contact <a href="mailto:support@allied.com" class="text-orange-600 font-bold hover:underline">Support</a> if you cannot find your ID.
     </p>
   </div>
 </DashboardLayout>
 
 <script>
-  // Select DOM Elements
+  import { db, auth } from "../lib/firebase";
+  import { ref, update, get } from "firebase/database";
+
   const form = document.getElementById('connect-form') as HTMLFormElement;
   const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
   const btnText = document.getElementById('btn-text');
   const statusContainer = document.getElementById('status-container');
-  const statusMsg = document.getElementById('status-msg');
   const deviceInput = document.getElementById('deviceId') as HTMLInputElement;
+
+  function showStatus(msg: string, isError: boolean) {
+    if (!statusContainer) return;
+    statusContainer.classList.remove('hidden');
+    statusContainer.textContent = msg;
+    statusContainer.className = isError 
+      ? "mt-6 p-4 rounded-xl text-center text-[11px] font-bold bg-red-50 text-red-700 border-red-100"
+      : "mt-6 p-4 rounded-xl text-center text-[11px] font-bold bg-green-50 text-green-700 border-green-100";
+  }
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    const fullId = deviceInput.value.trim(); // e.g., "ARK-586294"
-    
-    // 1. Validation Logic
+    const fullId = deviceInput.value.trim().toUpperCase();
+    const user = auth.currentUser;
+
+    if (!user) {
+        showStatus("Session expired. Please log in again.", true);
+        return;
+    }
+
     if (!fullId.startsWith('ARK-')) {
-      alert('Serial number must start with ARK-');
+      showStatus("Invalid format. Use ARK-XXXXXX", true);
       return;
     }
 
-    // 2. Extract numeric ID for Firebase path
-    const numericId = fullId.replace('ARK-', '').trim();
+    const numericId = fullId.replace('ARK-', '');
 
-    // 3. UI Loading State
+    // UI Loading
     submitBtn.disabled = true;
-    if (btnText) btnText.textContent = "Verifying Node...";
-    submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+    if (btnText) btnText.textContent = "Connecting...";
 
-    // 4. Simulated Connection/Handshake
-    // In a real app, you might query Firebase here to ensure the node exists
-    setTimeout(() => {
-      // 5. Success State
-      if (statusContainer && statusMsg) {
-        statusContainer.classList.remove('hidden');
-        statusMsg.className = "p-4 rounded-xl text-center text-[11px] font-bold bg-green-50 text-green-700 border border-green-100 animate-in fade-in slide-in-from-top-2";
-        statusMsg.innerHTML = `Successfully linked <span class="font-mono">${fullId}</span>. Redirecting to Stream...`;
+    try {
+      // 1. Verify if the hardware node exists in the DB
+      const nodeRef = ref(db, `hardware/${numericId}`);
+      const nodeSnap = await get(nodeRef);
+
+      if (!nodeSnap.exists()) {
+        showStatus("Device ID not found in registry.", true);
+        submitBtn.disabled = false;
+        if (btnText) btnText.textContent = "Connect Device";
+        return;
       }
 
-      // 6. Persistence
-      // Store the numeric ID so the DashboardLayout listener can find the DB path
-      localStorage.setItem('ark_linked_node', numericId);
+      // 2. Link device to the user profile
+      const userRef = ref(db, `software/user/${user.uid}`);
+      await update(userRef, {
+        linked_device: numericId,
+        last_sync: new Date().toISOString()
+      });
 
-      // 7. Redirect
+      // 3. Success state
+      localStorage.setItem('ark_linked_node', numericId);
+      showStatus(`Linked to ${fullId}. Redirecting...`, false);
+
       setTimeout(() => {
         window.location.href = '/';
       }, 1500);
-    }, 1200);
+
+    } catch (err: any) {
+      showStatus(`Error: ${err.message}`, true);
+      submitBtn.disabled = false;
+      if (btnText) btnText.textContent = "Connect Device";
+    }
   });
 
-  // Real-time Prefix enforcement
+  // Auto-format input to include prefix
   deviceInput?.addEventListener('input', () => {
-    if (deviceInput.value.length > 0 && !deviceInput.value.startsWith('ARK-')) {
-      deviceInput.value = 'ARK-' + deviceInput.value.replace('ARK-', '');
+    let val = deviceInput.value.toUpperCase();
+    if (val.length > 0 && !val.startsWith('ARK-')) {
+      deviceInput.value = 'ARK-' + val;
     }
   });
 </script>
