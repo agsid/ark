@@ -67,16 +67,16 @@ import Notifications from '../components/Notifications.astro';
         </div>
       </GlassCard>
 
-      <GlassCard class="p-6 bg-slate-900/95 border-slate-700/50 flex flex-col justify-between min-h-[180px]">
+      <GlassCard class="p-6 bg-slate-900/95 border-slate-700/50 flex flex-col justify-between min-h-[180px] transition-colors duration-500" id="lid-card">
         <span class="text-[12px] font-bold uppercase tracking-widest text-slate-500">Vault Lid</span>
-        <span id="lid-status" class="text-2xl font-black uppercase tracking-tight text-white">---</span>
-        <div id="dist-1-led" class="size-3 rounded-full bg-slate-700 transition-all"></div>
+        <span id="lid-status" class="text-2xl font-black uppercase tracking-tight text-white transition-all">---</span>
+        <div id="dist-1-led" class="size-3 rounded-full bg-slate-700 shadow-[0_0_8px_rgba(255,255,255,0.1)] transition-all"></div>
       </GlassCard>
 
-      <GlassCard class="p-6 bg-slate-900/95 border-slate-700/50 flex flex-col justify-between min-h-[180px]">
+      <GlassCard class="p-6 bg-slate-900/95 border-slate-700/50 flex flex-col justify-between min-h-[180px] transition-colors duration-500" id="artifact-card">
         <span class="text-[12px] font-bold uppercase tracking-widest text-slate-500">Artifact</span>
-        <span id="artifact-status" class="text-2xl font-black uppercase tracking-tight text-white">---</span>
-        <div id="dist-2-led" class="size-3 rounded-full bg-slate-700 transition-all"></div>
+        <span id="artifact-status" class="text-2xl font-black uppercase tracking-tight text-white transition-all">---</span>
+        <div id="dist-2-led" class="size-3 rounded-full bg-slate-700 shadow-[0_0_8px_rgba(255,255,255,0.1)] transition-all"></div>
       </GlassCard>
 
     </div>
@@ -109,15 +109,25 @@ import Notifications from '../components/Notifications.astro';
   import L from 'leaflet';
   import 'leaflet/dist/leaflet.css';
   import { db, auth } from '../lib/firebase';
-  import { ref, onValue, push, serverTimestamp } from 'firebase/database';
+  import { ref, onValue } from 'firebase/database';
 
   let currentCoords = { lat: 0, lng: 0 };
-  let systemState = { lidOpen: false, artifactPresent: true, lastTempF: null };
+  
+  // Track system state to detect transitions
+  let systemState = { 
+    lidOpen: null, 
+    artifactMissing: null, 
+    lastTempF: null 
+  };
 
-  const sendAlert = (title, body) => {
+  const sendAlert = (title, body, urgent = false) => {
     if ("Notification" in window && Notification.permission === "granted") {
-      new Notification(`ARK ALERT: ${title}`, { body, icon: '/favicon.svg' });
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      new Notification(`ARK ALERT: ${title}`, { 
+        body, 
+        icon: '/favicon.svg',
+        silent: !urgent 
+      });
+      if (urgent && navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
     }
   };
 
@@ -125,6 +135,7 @@ import Notifications from '../components/Notifications.astro';
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
   const marker = L.marker([0, 0], { icon: L.divIcon({ className: 'ark-marker', iconSize: [16, 16], iconAnchor: [8, 8] }) }).addTo(map);
 
+  // ... Chart Initializations (Same as your original)
   const envChart = new Chart(document.getElementById('envChart'), {
     type: 'line',
     data: { labels: [], datasets: [
@@ -152,15 +163,13 @@ import Notifications from '../components/Notifications.astro';
         const data = hwSnap.val();
         if (!data) return;
 
+        // --- ENVIRONMENT LOGIC ---
         if (data.environment) {
-          // Celsius to Fahrenheit conversion
           const tempF = (data.environment.temp * 9/5) + 32;
-          
-          // Thermometer logic (Assuming 32F to 122F range)
           const tempPercent = Math.min(Math.max(((tempF - 32) / (122 - 32)) * 100, 0), 100);
+          
           document.getElementById('temp-val').textContent = tempF.toFixed(1);
           document.getElementById('temp-fill').style.height = `${tempPercent}%`;
-
           document.getElementById('hum-val').textContent = Math.round(data.environment.humidity);
           document.getElementById('hum-bar').style.width = `${data.environment.humidity}%`;
 
@@ -172,12 +181,8 @@ import Notifications from '../components/Notifications.astro';
           document.getElementById('gas-val').textContent = Math.round(data.environment.gas);
           document.getElementById('gas-gauge').setAttribute('stroke-dasharray', `${Math.min(Math.max(gasNorm,0),75)}, 100`);
           
-          if (systemState.lastTempF && Math.abs(tempF - systemState.lastTempF) > 5) {
-            sendAlert("Environment Change", `Temp swung to ${tempF.toFixed(1)}°F`);
-          }
           systemState.lastTempF = tempF;
           
-          // Chart Update
           const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
           envChart.data.labels.push(time);
           envChart.data.datasets[0].data.push(tempF);
@@ -185,14 +190,37 @@ import Notifications from '../components/Notifications.astro';
           envChart.data.datasets[2].data.push(data.environment.gas);
         }
 
+        // --- MOTION & SECURITY LOGIC (ENHANCED) ---
         if (data.motion) {
           const isLidOpen = data.motion.sensor_1_cm > 10;
-          document.getElementById('lid-status').textContent = isLidOpen ? "OPENED" : "CLOSED";
-          document.getElementById('lid-status').className = isLidOpen ? "text-2xl font-black text-orange-500 animate-pulse" : "text-2xl font-black text-emerald-500";
-          
           const isArtMissing = data.motion.sensor_2_cm > 10;
-          document.getElementById('artifact-status').textContent = isArtMissing ? "MISSING" : "SECURED";
-          document.getElementById('artifact-status').className = isArtMissing ? "text-2xl font-black text-red-500 animate-bounce" : "text-2xl font-black text-blue-400";
+
+          // Lid Status UI
+          const lidEl = document.getElementById('lid-status');
+          const lidLed = document.getElementById('dist-1-led');
+          lidEl.textContent = isLidOpen ? "OPENED" : "CLOSED";
+          lidEl.className = isLidOpen ? "text-2xl font-black text-orange-500 animate-pulse" : "text-2xl font-black text-emerald-500";
+          lidLed.className = isLidOpen ? "size-3 rounded-full bg-orange-500 shadow-[0_0_12px_#f97316]" : "size-3 rounded-full bg-emerald-500 shadow-[0_0_12px_#10b981]";
+
+          // Artifact Status UI
+          const artEl = document.getElementById('artifact-status');
+          const artLed = document.getElementById('dist-2-led');
+          artEl.textContent = isArtMissing ? "MISSING" : "SECURED";
+          artEl.className = isArtMissing ? "text-2xl font-black text-red-500 animate-bounce" : "text-2xl font-black text-blue-400";
+          artLed.className = isArtMissing ? "size-3 rounded-full bg-red-600 shadow-[0_0_15px_#dc2626]" : "size-3 rounded-full bg-blue-500 shadow-[0_0_12px_#3b82f6]";
+
+          // NOTIFICATION TRIGGER LOGIC
+          // Check for transitions (prevents repeated alerts)
+          if (systemState.lidOpen === false && isLidOpen === true) {
+            sendAlert("Security Breach", "The Vault Lid has been OPENED!", true);
+          }
+          if (systemState.artifactMissing === false && isArtMissing === true) {
+            sendAlert("THEFT DETECTED", "The Artifact has been REMOVED!", true);
+          }
+
+          // Update tracking state
+          systemState.lidOpen = isLidOpen;
+          systemState.artifactMissing = isArtMissing;
           
           motionChart.data.labels.push(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
           motionChart.data.datasets[0].data.push(data.motion.sensor_1_cm);
